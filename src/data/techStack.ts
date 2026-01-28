@@ -79,9 +79,10 @@ export const categories: Category[] = [
     id: 'cloud',
     name: 'Cloud Provider',
     icon: '☁️',
-    multiSelect: false,
+    multiSelect: true,
     technologies: [
       { id: 'azure', name: 'Azure', category: 'cloud' },
+      { id: 'aws', name: 'AWS', category: 'cloud' },
     ],
   },
   {
@@ -93,6 +94,9 @@ export const categories: Category[] = [
       { id: 'gitlab-ci', name: 'GitLab CI', category: 'cicd' },
       { id: 'jenkins', name: 'Jenkins', category: 'cicd' },
       { id: 'argocd', name: 'ArgoCD', category: 'cicd' },
+      { id: 'azure-devops', name: 'Azure DevOps', category: 'cicd' },
+      { id: 'bamboo', name: 'Bamboo', category: 'cicd' },
+      { id: 'sonarqube', name: 'SonarQube', category: 'cicd' },
     ],
   },
   {
@@ -105,6 +109,9 @@ export const categories: Category[] = [
       { id: 'grafana', name: 'Grafana', category: 'observability' },
       { id: 'loki', name: 'Loki', category: 'observability' },
       { id: 'jaeger', name: 'Jaeger', category: 'observability' },
+      { id: 'kibana', name: 'Kibana', category: 'observability' },
+      { id: 'logstash', name: 'Logstash', category: 'observability' },
+      { id: 'graylog', name: 'Graylog', category: 'observability' },
       { id: 'uptime-robot', name: 'Uptime Robot', category: 'observability' },
       { id: 'pyroscope', name: 'Pyroscope', category: 'observability' },
     ],
@@ -128,7 +135,11 @@ export const categories: Category[] = [
     technologies: [
       { id: 'docker', name: 'Docker', category: 'container' },
       { id: 'kubernetes', name: 'Kubernetes', category: 'container' },
+      { id: 'openshift', name: 'OpenShift', category: 'container' },
+      { id: 'rancher', name: 'Rancher', category: 'container' },
       { id: 'docker-compose', name: 'Docker Compose', category: 'container' },
+      { id: 'helm', name: 'Helm', category: 'container' },
+      { id: 'istio', name: 'Istio', category: 'container' },
     ],
   },
   {
@@ -138,6 +149,27 @@ export const categories: Category[] = [
     multiSelect: true,
     technologies: [
       { id: 'terraform', name: 'Terraform', category: 'iac' },
+      { id: 'ansible', name: 'Ansible', category: 'iac' },
+    ],
+  },
+  {
+    id: 'loadbalancer',
+    name: 'Load Balancer & Proxy',
+    icon: '⚖️',
+    multiSelect: true,
+    technologies: [
+      { id: 'nginx', name: 'Nginx', category: 'loadbalancer' },
+      { id: 'haproxy', name: 'HAProxy', category: 'loadbalancer' },
+    ],
+  },
+  {
+    id: 'virtualization',
+    name: 'Virtualization & Backup',
+    icon: '💾',
+    multiSelect: true,
+    technologies: [
+      { id: 'vmware', name: 'VMware', category: 'virtualization' },
+      { id: 'veeam', name: 'Veeam', category: 'virtualization' },
     ],
   },
 ];

@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import JSZip from 'jszip';
 import { categories, tiers } from './data/techStack';
 import { presets } from './data/presets';
 import { getTechInfo } from './data/techInfo';
-import { generateRuleset } from './generator';
+import { generateRuleset, generateTemplateFiles } from './generator';
 import { autoSelectRequired, getAllRecommendations, getRequiredTechs } from './data/relationships';
+import { translations, type Language } from './i18n/translations';
+import { useLocalStorage, STORAGE_KEYS } from './hooks/useLocalStorage';
 import type { GeneratorConfig } from './types';
 import type { Preset } from './data/presets';
 import './App.css';
@@ -11,23 +14,74 @@ import './App.css';
 type Step = 'preset' | 'stack' | 'tiers' | 'review' | 'export';
 
 function App() {
+  // Language and LocalStorage
+  const [language, setLanguage] = useLocalStorage<Language>(STORAGE_KEYS.LANGUAGE, 'tr');
+  const [savedProjectName, setSavedProjectName] = useLocalStorage<string>(STORAGE_KEYS.PROJECT_NAME, 'MyProject');
+  const [savedTechnologies, setSavedTechnologies] = useLocalStorage<Record<string, string[]>>(STORAGE_KEYS.SELECTED_TECHNOLOGIES, {});
+  const [savedTiers, setSavedTiers] = useLocalStorage<number[]>(STORAGE_KEYS.SELECTED_TIERS, [1]);
+  const [savedPresetId, setSavedPresetId] = useLocalStorage<string | null>(STORAGE_KEYS.LAST_PRESET, null);
+
+  const t = translations[language];
+
   const [currentStep, setCurrentStep] = useState<Step>('preset');
-  const [projectName, setProjectName] = useState('MyProject');
-  const [selectedPreset, setSelectedPreset] = useState<Preset | null>(null);
-  const [selectedTechnologies, setSelectedTechnologies] = useState<Record<string, string[]>>({});
-  const [selectedTiers, setSelectedTiers] = useState<number[]>([1]);
+  const [projectName, setProjectName] = useState(savedProjectName);
+  const [selectedPreset, setSelectedPreset] = useState<Preset | null>(() => {
+    if (savedPresetId) {
+      return presets.find(p => p.id === savedPresetId) || null;
+    }
+    return null;
+  });
+  const [selectedTechnologies, setSelectedTechnologies] = useState<Record<string, string[]>>(savedTechnologies);
+  const [selectedTiers, setSelectedTiers] = useState<number[]>(savedTiers.length > 0 ? savedTiers : [1]);
   const [generatedContent, setGeneratedContent] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [showAutoSelectToast, setShowAutoSelectToast] = useState<string | null>(null);
   const [hoveredTech, setHoveredTech] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<'raw' | 'rendered'>('rendered');
+  const [excludedTemplates, setExcludedTemplates] = useState<string[]>([]);
+
+  // Save to localStorage when values change
+  const handleProjectNameChange = useCallback((name: string) => {
+    setProjectName(name);
+    setSavedProjectName(name);
+  }, [setSavedProjectName]);
+
+  const handleTechnologiesChange = useCallback((techs: Record<string, string[]>) => {
+    setSelectedTechnologies(techs);
+    setSavedTechnologies(techs);
+  }, [setSavedTechnologies]);
+
+  const handleTiersChange = useCallback((tiers: number[]) => {
+    setSelectedTiers(tiers);
+    setSavedTiers(tiers);
+  }, [setSavedTiers]);
+
+  const handleClearConfig = () => {
+    // Clear all localStorage
+    localStorage.removeItem(STORAGE_KEYS.PROJECT_NAME);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_TECHNOLOGIES);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_TIERS);
+    localStorage.removeItem(STORAGE_KEYS.LAST_PRESET);
+    // Reset state
+    setProjectName('MyProject');
+    setSelectedPreset(null);
+    setSelectedTechnologies({});
+    setSelectedTiers([1]);
+    setExcludedTemplates([]);
+    setCurrentStep('preset');
+  };
 
   const steps: { id: Step; label: string; icon: string }[] = [
-    { id: 'preset', label: 'Baslangic', icon: '1' },
-    { id: 'stack', label: 'Tech Stack', icon: '2' },
-    { id: 'tiers', label: 'Templates', icon: '3' },
-    { id: 'review', label: 'Onizleme', icon: '4' },
-    { id: 'export', label: 'Export', icon: '5' },
+    { id: 'preset', label: t.stepPreset, icon: '1' },
+    { id: 'stack', label: t.stepStack, icon: '2' },
+    { id: 'tiers', label: t.stepTemplates, icon: '3' },
+    { id: 'review', label: t.stepPreview, icon: '4' },
+    { id: 'export', label: t.stepExport, icon: '5' },
   ];
+
+  const getSelectionCount = (): number => {
+    return Object.values(selectedTechnologies).reduce((sum, arr) => sum + arr.length, 0);
+  };
 
   const recommendations = useMemo(() => getAllRecommendations(selectedTechnologies), [selectedTechnologies]);
 
@@ -54,92 +108,95 @@ function App() {
 
     // Check minimum selections
     if (Object.keys(selectedTechnologies).length === 0 || getSelectionCount() === 0) {
-      issues.push({ type: 'error', message: 'En az bir teknoloji secmelisiniz.' });
+      issues.push({ type: 'error', message: t.validationMinTech });
     }
 
     // Check language selection
     if (!selectedTechnologies.languages?.length) {
-      issues.push({ type: 'warning', message: 'Programlama dili secilmedi.' });
+      issues.push({ type: 'warning', message: t.validationNoLang });
     }
 
     // Check database for backend projects
     if (selectedTechnologies.backend?.length && !selectedTechnologies.database?.length) {
-      issues.push({ type: 'warning', message: 'Backend secildi ama veritabani secilmedi.' });
+      issues.push({ type: 'warning', message: t.validationNoDb });
     }
 
     // Check container for production
     if (selectedTiers.includes(3) && !selectedTechnologies.container?.length) {
-      issues.push({ type: 'warning', message: 'Enterprise tier secildi ama container secilmedi.' });
+      issues.push({ type: 'warning', message: t.validationNoContainer });
     }
 
     // Check observability for production
     if (selectedTiers.includes(3) && !selectedTechnologies.observability?.length) {
-      issues.push({ type: 'info', message: 'Production icin observability onerilir.' });
+      issues.push({ type: 'info', message: t.validationNoObservability });
     }
 
     // Check CI/CD
     if (!selectedTechnologies.cicd?.length) {
-      issues.push({ type: 'info', message: 'CI/CD araci secilmedi.' });
+      issues.push({ type: 'info', message: t.validationNoCicd });
     }
 
     // Kubernetes without Docker
     if (selectedTechnologies.container?.includes('kubernetes') && !selectedTechnologies.container?.includes('docker')) {
-      issues.push({ type: 'error', message: 'Kubernetes icin Docker gerekli.' });
+      issues.push({ type: 'error', message: t.validationK8sDocker });
     }
 
     return issues;
-  }, [selectedTechnologies, selectedTiers]);
+  }, [selectedTechnologies, selectedTiers, t]);
 
   const handlePresetSelect = (preset: Preset) => {
     setSelectedPreset(preset);
+    setSavedPresetId(preset.id);
+    // Clear excluded templates when selecting new preset
+    setExcludedTemplates([]);
     if (preset.id !== 'custom') {
-      setSelectedTechnologies(preset.technologies);
-      setSelectedTiers(preset.tiers);
+      // Deep copy technologies to avoid reference issues
+      const techs = JSON.parse(JSON.stringify(preset.technologies));
+      handleTechnologiesChange(techs);
+      handleTiersChange([...preset.tiers]);
     } else {
-      setSelectedTechnologies({});
-      setSelectedTiers([1]);
+      handleTechnologiesChange({});
+      handleTiersChange([1]);
     }
   };
 
   const handleTechToggle = (categoryId: string, techId: string, multiSelect: boolean) => {
-    setSelectedTechnologies(prev => {
-      const current = prev[categoryId] || [];
-      let newSelection: Record<string, string[]>;
+    const current = selectedTechnologies[categoryId] || [];
+    let newSelection: Record<string, string[]>;
 
-      if (multiSelect) {
-        if (current.includes(techId)) {
-          const isRequired = Object.entries(prev).some(([cat, techs]) => {
-            if (cat === categoryId) return false;
-            return techs.some(t => {
-              const reqs = getRequiredTechs(t);
-              return reqs.some(r => r.category === categoryId && r.techs.includes(techId));
-            });
+    if (multiSelect) {
+      if (current.includes(techId)) {
+        const isRequired = Object.entries(selectedTechnologies).some(([cat, techs]) => {
+          if (cat === categoryId) return false;
+          return techs.some(t => {
+            const reqs = getRequiredTechs(t);
+            return reqs.some(r => r.category === categoryId && r.techs.includes(techId));
           });
+        });
 
-          if (isRequired) {
-            showToast(`${getTechName(techId)} baska bir secim tarafindan gerekli!`);
-            return prev;
-          }
-          newSelection = { ...prev, [categoryId]: current.filter(id => id !== techId) };
-        } else {
-          newSelection = { ...prev, [categoryId]: [...current, techId] };
-          newSelection = autoSelectRequired(techId, newSelection);
-          const autoSelected = getRequiredTechs(techId);
-          if (autoSelected.length > 0) {
-            const names = autoSelected.map(r => r.techs.map(t => getTechName(t)).join(' veya ')).join(', ');
-            showToast(`Otomatik eklendi: ${names}`);
-          }
+        if (isRequired) {
+          showToast(`${getTechName(techId)} ${t.requiredBy}`);
+          return;
         }
+        newSelection = { ...selectedTechnologies, [categoryId]: current.filter(id => id !== techId) };
       } else {
-        if (current.includes(techId)) {
-          newSelection = { ...prev, [categoryId]: [] };
-        } else {
-          newSelection = { ...prev, [categoryId]: [techId] };
-          newSelection = autoSelectRequired(techId, newSelection);
+        newSelection = { ...selectedTechnologies, [categoryId]: [...current, techId] };
+        newSelection = autoSelectRequired(techId, newSelection);
+        const autoSelected = getRequiredTechs(techId);
+        if (autoSelected.length > 0) {
+          const names = autoSelected.map(r => r.techs.map(t => getTechName(t)).join(language === 'tr' ? ' veya ' : ' or ')).join(', ');
+          showToast(`${t.autoAdded}: ${names}`);
         }
       }
-      return newSelection;
-    });
+    } else {
+      if (current.includes(techId)) {
+        newSelection = { ...selectedTechnologies, [categoryId]: [] };
+      } else {
+        newSelection = { ...selectedTechnologies, [categoryId]: [techId] };
+        newSelection = autoSelectRequired(techId, newSelection);
+      }
+    }
+    handleTechnologiesChange(newSelection);
   };
 
   const showToast = (message: string) => {
@@ -157,16 +214,34 @@ function App() {
 
   const handleTierToggle = (tierId: number) => {
     if (tierId === 1) return;
-    setSelectedTiers(prev => prev.includes(tierId) ? prev.filter(id => id !== tierId) : [...prev, tierId]);
+    const newTiers = selectedTiers.includes(tierId)
+      ? selectedTiers.filter(id => id !== tierId)
+      : [...selectedTiers, tierId];
+    handleTiersChange(newTiers);
+  };
+
+  const handleTemplateToggle = (templateName: string) => {
+    setExcludedTemplates(prev =>
+      prev.includes(templateName)
+        ? prev.filter(t => t !== templateName)
+        : [...prev, templateName]
+    );
+  };
+
+  const getSelectedTemplates = (): string[] => {
+    return tiers
+      .filter(tier => selectedTiers.includes(tier.id))
+      .flatMap(tier => tier.templates)
+      .filter(template => !excludedTemplates.includes(template));
   };
 
   const handleGenerate = () => {
-    const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers };
+    const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates };
     const content = generateRuleset(config);
     setGeneratedContent(content);
   };
 
-  const handleDownload = (format: 'single' | 'zip') => {
+  const handleDownload = async (format: 'single' | 'zip') => {
     if (format === 'single') {
       const blob = new Blob([generatedContent], { type: 'text/markdown' });
       const url = URL.createObjectURL(blob);
@@ -177,8 +252,32 @@ function App() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    } else if (format === 'zip') {
+      const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates };
+      const templateFiles = generateTemplateFiles(config);
+
+      const zip = new JSZip();
+      const folder = zip.folder('.claude');
+
+      // Add each template file to the .claude folder
+      templateFiles.forEach(file => {
+        folder?.file(file.name, file.content);
+      });
+
+      // Also add a combined ruleset at root
+      zip.file(`VIBE_CODING_RULESET_${projectName.toUpperCase()}.md`, generatedContent);
+
+      // Generate and download ZIP
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${projectName}_vibe_coding_templates.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-    // ZIP functionality would require additional library
   };
 
   const handleCopy = async () => {
@@ -189,10 +288,6 @@ function App() {
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  };
-
-  const getSelectionCount = (): number => {
-    return Object.values(selectedTechnologies).reduce((sum, arr) => sum + arr.length, 0);
   };
 
   const goToStep = (step: Step) => {
@@ -224,6 +319,56 @@ function App() {
     return true;
   };
 
+  // Simple markdown to HTML converter
+  const renderMarkdown = (md: string): string => {
+    let html = md
+      // Code blocks
+      .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+      // Inline code
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      // Headers
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Horizontal rule
+      .replace(/^---$/gm, '<hr>')
+      // Blockquote
+      .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+      // Unordered list items
+      .replace(/^- \[ \] (.*$)/gm, '<li class="task">☐ $1</li>')
+      .replace(/^- \[x\] (.*$)/gm, '<li class="task done">☑ $1</li>')
+      .replace(/^- (.*$)/gm, '<li>$1</li>')
+      // Ordered list items
+      .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+      // Tables (basic support)
+      .replace(/\|(.+)\|/g, (match) => {
+        const cells = match.split('|').filter(c => c.trim());
+        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+      })
+      // Line breaks
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+
+    // Wrap in paragraph tags
+    html = '<p>' + html + '</p>';
+
+    // Clean up empty paragraphs
+    html = html.replace(/<p><\/p>/g, '');
+    html = html.replace(/<p>(<h[1-3]>)/g, '$1');
+    html = html.replace(/(<\/h[1-3]>)<\/p>/g, '$1');
+    html = html.replace(/<p>(<pre>)/g, '$1');
+    html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+    html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
+    html = html.replace(/<p>(<li>)/g, '<ul>$1');
+    html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
+
+    return html;
+  };
+
   return (
     <div className="app">
       {/* Header */}
@@ -231,8 +376,31 @@ function App() {
         <div className="header-brand">
           <div className="logo">VC</div>
           <div className="header-text">
-            <h1>Vibe Coding Generator</h1>
-            <p>AI-destekli development icin ozellestirilmis ruleset olusturucu</p>
+            <h1>{t.appTitle}</h1>
+            <p>{t.appSubtitle}</p>
+          </div>
+        </div>
+        <div className="header-actions">
+          <button
+            className="reset-btn"
+            onClick={handleClearConfig}
+            title={language === 'tr' ? 'Ayarları Sıfırla' : 'Reset Config'}
+          >
+            ⟳
+          </button>
+          <div className="lang-toggle">
+            <button
+              className={`lang-btn ${language === 'tr' ? 'active' : ''}`}
+              onClick={() => setLanguage('tr')}
+            >
+              TR
+            </button>
+            <button
+              className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+              onClick={() => setLanguage('en')}
+            >
+              EN
+            </button>
           </div>
         </div>
       </header>
@@ -260,17 +428,17 @@ function App() {
         {currentStep === 'preset' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>Proje Ayarlari</h2>
-              <p>Projeniz icin bir baslangic noktasi secin veya sifirdan olusturun.</p>
+              <h2>{t.projectSettings}</h2>
+              <p>{t.projectSettingsDesc}</p>
             </div>
 
             <div className="form-group">
-              <label>Proje Adi</label>
+              <label>{t.projectName}</label>
               <input
                 type="text"
                 value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="ornek: MyAwesomeProject"
+                onChange={(e) => handleProjectNameChange(e.target.value)}
+                placeholder={t.projectNamePlaceholder}
                 className="project-input"
               />
             </div>
@@ -303,8 +471,8 @@ function App() {
         {currentStep === 'stack' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>Tech Stack Secimi</h2>
-              <p>Projenizde kullanacaginiz teknolojileri secin. Bagimliliklar otomatik eklenir.</p>
+              <h2>{t.techStackSelection}</h2>
+              <p>{t.techStackSelectionDesc}</p>
             </div>
 
             {/* Validation Panel */}
@@ -323,9 +491,9 @@ function App() {
 
             {/* Selection Summary */}
             <div className="selection-summary">
-              <span className="summary-count">{getSelectionCount()} teknoloji secildi</span>
+              <span className="summary-count">{getSelectionCount()} {t.techSelected}</span>
               {selectedPreset && selectedPreset.id !== 'custom' && (
-                <span className="summary-preset">Preset: {selectedPreset.name}</span>
+                <span className="summary-preset">{t.preset}: {selectedPreset.name}</span>
               )}
             </div>
 
@@ -335,14 +503,14 @@ function App() {
                 <h4>{getTechName(hoveredTech)}</h4>
                 <p>{getTechInfo(hoveredTech)?.description}</p>
                 <div className="tech-info-details">
-                  <div><strong>Kullanim:</strong> {getTechInfo(hoveredTech)?.useCase}</div>
+                  <div><strong>{t.usage}:</strong> {getTechInfo(hoveredTech)?.useCase}</div>
                   <div className="tech-pros-cons">
                     <div className="pros">
-                      <strong>Artilari:</strong>
+                      <strong>{t.pros}:</strong>
                       <ul>{getTechInfo(hoveredTech)?.pros.map((p, i) => <li key={i}>{p}</li>)}</ul>
                     </div>
                     <div className="cons">
-                      <strong>Eksileri:</strong>
+                      <strong>{t.cons}:</strong>
                       <ul>{getTechInfo(hoveredTech)?.cons.map((c, i) => <li key={i}>{c}</li>)}</ul>
                     </div>
                   </div>
@@ -378,7 +546,7 @@ function App() {
                           />
                           <span className="tech-name">{tech.name}</span>
                           {required && isSelected && <span className="lock-icon">🔒</span>}
-                          {recommended && !isSelected && <span className="recommend-badge">onerilen</span>}
+                          {recommended && !isSelected && <span className="recommend-badge">{t.recommended}</span>}
                         </label>
                       );
                     })}
@@ -393,8 +561,8 @@ function App() {
         {currentStep === 'tiers' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>Template Tier Secimi</h2>
-              <p>Projenizin buyuklugune gore gerekli template tier'larini secin.</p>
+              <h2>{t.tierSelection}</h2>
+              <p>{t.tierSelectionDesc}</p>
             </div>
 
             <div className="tiers-list">
@@ -410,21 +578,42 @@ function App() {
                     <div className="tier-main">
                       <div className="tier-header">
                         <h3>{tier.name}</h3>
-                        {tier.required && <span className="required-badge">Zorunlu</span>}
+                        {tier.required && <span className="required-badge">{t.required}</span>}
                       </div>
                       <p className="tier-description">{tier.description}</p>
                     </div>
                   </label>
                   <div className="tier-templates">
-                    <h4>{tier.templates.length} Template:</h4>
-                    <div className="template-list">
-                      {tier.templates.map(t => (
-                        <span key={t} className="template-tag">{t}</span>
+                    <h4>{tier.templates.filter(tmpl => !excludedTemplates.includes(tmpl)).length}/{tier.templates.length} {t.templates}:</h4>
+                    <div className="template-checkbox-list">
+                      {tier.templates.map(tmpl => (
+                        <label
+                          key={tmpl}
+                          className={`template-checkbox ${excludedTemplates.includes(tmpl) ? 'excluded' : ''}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={!excludedTemplates.includes(tmpl)}
+                            onChange={() => handleTemplateToggle(tmpl)}
+                            disabled={!selectedTiers.includes(tier.id)}
+                          />
+                          <span>{tmpl}</span>
+                        </label>
                       ))}
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Template Summary */}
+            <div className="template-summary">
+              <h4>{language === 'tr' ? 'Secili Template\'ler' : 'Selected Templates'}: {getSelectedTemplates().length}</h4>
+              <div className="template-list">
+                {getSelectedTemplates().map(tmpl => (
+                  <span key={tmpl} className="template-tag selected">{tmpl}</span>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -433,13 +622,13 @@ function App() {
         {currentStep === 'review' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>Onizleme</h2>
-              <p>Olusturulan ruleset'i inceleyin.</p>
+              <h2>{t.preview}</h2>
+              <p>{t.previewDesc}</p>
             </div>
 
             {/* Architecture Summary */}
             <div className="architecture-summary">
-              <h3>Mimari Ozeti</h3>
+              <h3>{t.archSummary}</h3>
               <div className="arch-grid">
                 {Object.entries(selectedTechnologies).map(([catId, techs]) => {
                   if (techs.length === 0) return null;
@@ -455,7 +644,30 @@ function App() {
               </div>
             </div>
 
-            <pre className="preview-content">{generatedContent}</pre>
+            {/* Preview Tabs */}
+            <div className="preview-tabs">
+              <button
+                className={`preview-tab ${previewMode === 'rendered' ? 'active' : ''}`}
+                onClick={() => setPreviewMode('rendered')}
+              >
+                {language === 'tr' ? 'Gorsel' : 'Rendered'}
+              </button>
+              <button
+                className={`preview-tab ${previewMode === 'raw' ? 'active' : ''}`}
+                onClick={() => setPreviewMode('raw')}
+              >
+                {language === 'tr' ? 'Kaynak' : 'Source'}
+              </button>
+            </div>
+
+            {previewMode === 'raw' ? (
+              <pre className="preview-content">{generatedContent}</pre>
+            ) : (
+              <div
+                className="markdown-preview"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(generatedContent) }}
+              />
+            )}
           </div>
         )}
 
@@ -463,35 +675,42 @@ function App() {
         {currentStep === 'export' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>Export</h2>
-              <p>Ruleset'i indirin veya kopyalayin.</p>
+              <h2>{t.export}</h2>
+              <p>{t.exportDesc}</p>
             </div>
 
             <div className="export-options">
+              <div className="export-card" onClick={() => handleDownload('zip')}>
+                <div className="export-icon">📦</div>
+                <h3>{t.zipArchive}</h3>
+                <p>{t.zipArchiveDesc}</p>
+                <button className="btn-primary">ZIP {t.download}</button>
+              </div>
+
               <div className="export-card" onClick={() => handleDownload('single')}>
                 <div className="export-icon">📄</div>
-                <h3>Tek Dosya (Markdown)</h3>
-                <p>Tum template'ler tek bir .md dosyasinda</p>
-                <button className="btn-primary">Indir</button>
+                <h3>{t.singleFile}</h3>
+                <p>{t.singleFileDesc}</p>
+                <button className="btn-primary">MD {t.download}</button>
               </div>
 
               <div className="export-card" onClick={handleCopy}>
                 <div className="export-icon">📋</div>
-                <h3>Panoya Kopyala</h3>
-                <p>Icerigi clipboard'a kopyala</p>
+                <h3>{t.copyClipboard}</h3>
+                <p>{t.copyClipboardDesc}</p>
                 <button className={`btn-primary ${copySuccess ? 'success' : ''}`}>
-                  {copySuccess ? 'Kopyalandi!' : 'Kopyala'}
+                  {copySuccess ? t.copied : t.copy}
                 </button>
               </div>
             </div>
 
             <div className="export-info">
-              <h4>Sonraki Adimlar</h4>
+              <h4>{t.nextSteps}</h4>
               <ol>
-                <li>Ruleset dosyasini projenizin root klasorune koyun</li>
-                <li>Her template'i ayri dosyalar olarak <code>.claude/</code> klasorune tasiyabilirsiniz</li>
-                <li>Claude AI ile coding session'lariniza baslayin</li>
-                <li>SESSION_NOTES.md ve SESSION_HANDOFF.md dosyalarini guncel tutun</li>
+                <li>{t.nextStep1}</li>
+                <li>{t.nextStep2}</li>
+                <li>{t.nextStep3}</li>
+                <li>{t.nextStep4}</li>
               </ol>
             </div>
           </div>
@@ -501,13 +720,13 @@ function App() {
       {/* Footer Navigation */}
       <footer className="footer-nav">
         <button className="btn-secondary" onClick={prevStep} disabled={currentStep === 'preset'}>
-          ← Geri
+          ← {t.back}
         </button>
         <div className="footer-info">
-          Vibe Coding Generator v2.0
+          {t.version}
         </div>
         <button className="btn-primary" onClick={nextStep} disabled={!canProceed() || currentStep === 'export'}>
-          {currentStep === 'tiers' ? 'Olustur' : 'Devam →'}
+          {currentStep === 'tiers' ? t.generate : `${t.next} →`}
         </button>
       </footer>
     </div>

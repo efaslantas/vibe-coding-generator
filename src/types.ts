@@ -24,4 +24,5 @@ export interface GeneratorConfig {
   projectName: string;
   selectedTechnologies: Record<string, string[]>;
   selectedTiers: number[];
+  excludedTemplates?: string[];
 }

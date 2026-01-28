@@ -198,7 +198,125 @@ export const techRelationships: Record<string, TechRelationship> = {
   // Elasticsearch
   'elasticsearch': {
     recommends: [
-      { category: 'observability', techs: ['grafana'] },
+      { category: 'observability', techs: ['grafana', 'kibana', 'logstash'] },
+    ],
+  },
+
+  // OpenShift → Docker
+  'openshift': {
+    requires: [{ category: 'container', techs: ['docker'] }],
+    recommends: [
+      { category: 'cicd', techs: ['jenkins', 'argocd'] },
+      { category: 'observability', techs: ['prometheus', 'grafana'] },
+    ],
+  },
+
+  // Rancher → Kubernetes
+  'rancher': {
+    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
+    recommends: [
+      { category: 'container', techs: ['helm'] },
+    ],
+  },
+
+  // Helm → Kubernetes
+  'helm': {
+    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
+    recommends: [
+      { category: 'cicd', techs: ['argocd'] },
+    ],
+  },
+
+  // Istio → Kubernetes
+  'istio': {
+    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
+    recommends: [
+      { category: 'observability', techs: ['jaeger', 'prometheus', 'grafana'] },
+    ],
+  },
+
+  // AWS
+  'aws': {
+    recommends: [
+      { category: 'container', techs: ['kubernetes'] },
+      { category: 'iac', techs: ['terraform'] },
+    ],
+  },
+
+  // Azure DevOps
+  'azure-devops': {
+    recommends: [
+      { category: 'cloud', techs: ['azure'] },
+      { category: 'languages', techs: ['csharp'] },
+    ],
+  },
+
+  // Bamboo
+  'bamboo': {
+    recommends: [
+      { category: 'languages', techs: ['java'] },
+    ],
+  },
+
+  // SonarQube
+  'sonarqube': {
+    recommends: [
+      { category: 'cicd', techs: ['gitlab-ci', 'jenkins'] },
+    ],
+  },
+
+  // Ansible
+  'ansible': {
+    recommends: [
+      { category: 'iac', techs: ['terraform'] },
+      { category: 'container', techs: ['docker'] },
+    ],
+  },
+
+  // ELK Stack relationships
+  'kibana': {
+    requires: [{ category: 'search', techs: ['elasticsearch'] }],
+    recommends: [
+      { category: 'observability', techs: ['logstash'] },
+    ],
+  },
+  'logstash': {
+    recommends: [
+      { category: 'search', techs: ['elasticsearch'] },
+      { category: 'observability', techs: ['kibana'] },
+    ],
+  },
+
+  // Graylog
+  'graylog': {
+    recommends: [
+      { category: 'search', techs: ['elasticsearch'] },
+      { category: 'database', techs: ['mongodb'] },
+    ],
+  },
+
+  // Load Balancers
+  'nginx': {
+    recommends: [
+      { category: 'container', techs: ['docker', 'kubernetes'] },
+    ],
+  },
+  'haproxy': {
+    recommends: [
+      { category: 'container', techs: ['kubernetes'] },
+    ],
+  },
+
+  // Virtualization
+  'vmware': {
+    recommends: [
+      { category: 'virtualization', techs: ['veeam'] },
+      { category: 'iac', techs: ['ansible', 'terraform'] },
+    ],
+  },
+  'veeam': {
+    recommends: [
+      { category: 'virtualization', techs: ['vmware'] },
     ],
   },
 };

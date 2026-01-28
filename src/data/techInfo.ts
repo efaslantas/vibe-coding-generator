@@ -290,6 +290,114 @@ export const techInfo: Record<string, TechInfo> = {
     pros: ['Declarative', 'Multi-cloud', 'State management'],
     cons: ['State complexity', 'HCL learning'],
   },
+  'ansible': {
+    description: 'Ansible - Agentless automation ve configuration management.',
+    useCase: 'Server configuration, App deployment, Orchestration',
+    pros: ['Agentless', 'YAML syntax', 'Idempotent'],
+    cons: ['Python dependency', 'Slow for large scale'],
+  },
+
+  // Container extras
+  'openshift': {
+    description: 'OpenShift - Red Hat\'in enterprise Kubernetes platformu.',
+    useCase: 'Enterprise K8s, Hybrid cloud, CI/CD entegrasyonu',
+    pros: ['Enterprise support', 'Built-in CI/CD', 'Security'],
+    cons: ['Maliyet', 'Complexity', 'Resource heavy'],
+  },
+  'rancher': {
+    description: 'Rancher - Multi-cluster Kubernetes management.',
+    useCase: 'Multi-cluster yonetimi, Hybrid/Multi-cloud K8s',
+    pros: ['Multi-cluster', 'Easy UI', 'App catalog'],
+    cons: ['Additional layer', 'Learning curve'],
+  },
+  'helm': {
+    description: 'Helm - Kubernetes package manager.',
+    useCase: 'K8s app packaging, Release management, Charts',
+    pros: ['Templating', 'Versioning', 'Rollback'],
+    cons: ['Complexity', 'Chart maintenance'],
+  },
+  'istio': {
+    description: 'Istio - Service mesh for microservices.',
+    useCase: 'Traffic management, Security, Observability',
+    pros: ['mTLS', 'Traffic control', 'Observability'],
+    cons: ['Resource overhead', 'Complexity', 'Learning curve'],
+  },
+
+  // Cloud extras
+  'aws': {
+    description: 'Amazon Web Services - En buyuk cloud provider.',
+    useCase: 'Her tur cloud workload, Startup to Enterprise',
+    pros: ['Genis servis yelpazesi', 'Global', 'Olgun'],
+    cons: ['Karmasik fiyatlandirma', 'Vendor lock-in'],
+  },
+
+  // CI/CD extras
+  'azure-devops': {
+    description: 'Azure DevOps - Microsoft\'un CI/CD ve proje yonetim platformu.',
+    useCase: 'Microsoft stack, Enterprise CI/CD, Agile',
+    pros: ['Entegre suite', 'Azure native', 'Boards'],
+    cons: ['UI complexity', 'Microsoft bagimli'],
+  },
+  'bamboo': {
+    description: 'Bamboo - Atlassian\'in CI/CD araci.',
+    useCase: 'Jira entegrasyonu, Enterprise CI/CD',
+    pros: ['Atlassian suite', 'Build agents', 'Deployment'],
+    cons: ['Lisans maliyeti', 'Eski UI'],
+  },
+  'sonarqube': {
+    description: 'SonarQube - Code quality ve security analysis.',
+    useCase: 'Static code analysis, Security scanning, Quality gates',
+    pros: ['Multi-language', 'Security rules', 'Quality gates'],
+    cons: ['Resource heavy', 'False positives'],
+  },
+
+  // Observability extras
+  'kibana': {
+    description: 'Kibana - Elasticsearch icin visualization platform.',
+    useCase: 'Log visualization, Dashboards, Search UI',
+    pros: ['Powerful viz', 'Elasticsearch native', 'Dashboards'],
+    cons: ['ES bagimli', 'Resource usage'],
+  },
+  'logstash': {
+    description: 'Logstash - Server-side data processing pipeline.',
+    useCase: 'Log parsing, Data transformation, ETL',
+    pros: ['Flexible', 'Many plugins', 'Powerful filters'],
+    cons: ['Resource heavy', 'JVM based'],
+  },
+  'graylog': {
+    description: 'Graylog - Centralized log management platform.',
+    useCase: 'Log aggregation, Analysis, Alerting',
+    pros: ['Open source', 'Stream processing', 'Alerting'],
+    cons: ['MongoDB/ES dependency', 'Scaling'],
+  },
+
+  // Load Balancer
+  'nginx': {
+    description: 'Nginx - High-performance web server ve reverse proxy.',
+    useCase: 'Web serving, Reverse proxy, Load balancing',
+    pros: ['Cok hizli', 'Low memory', 'Flexible config'],
+    cons: ['Config syntax', 'Dynamic upstream'],
+  },
+  'haproxy': {
+    description: 'HAProxy - Reliable high availability load balancer.',
+    useCase: 'TCP/HTTP load balancing, High availability',
+    pros: ['Ultra hizli', 'Reliable', 'Health checks'],
+    cons: ['Config complexity', 'No caching'],
+  },
+
+  // Virtualization & Backup
+  'vmware': {
+    description: 'VMware vSphere - Enterprise virtualization platform.',
+    useCase: 'Server virtualization, Private cloud, VDI',
+    pros: ['Enterprise standard', 'vMotion', 'Ecosystem'],
+    cons: ['Lisans maliyeti', 'Complexity'],
+  },
+  'veeam': {
+    description: 'Veeam - Backup ve disaster recovery cozumu.',
+    useCase: 'VM backup, DR, Cloud backup',
+    pros: ['Instant recovery', 'Replication', 'Cloud support'],
+    cons: ['Lisans maliyeti', 'Agent management'],
+  },
 };
 
 export function getTechInfo(techId: string): TechInfo | undefined {

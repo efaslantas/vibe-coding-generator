@@ -1,0 +1,32 @@
+services:
+  vibe-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vibe-coding-generator
+    ports:
+      - "9091:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "app=vibe-coding-generator"
+      - "version=2.0.0"
+
+  # Development service with hot reload
+  vibe-generator-dev:
+    image: node:22-alpine
+    container_name: vibe-coding-generator-dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    profiles:
+      - dev
