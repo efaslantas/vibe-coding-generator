@@ -18,12 +18,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kullaniciadi/vibe-coding-generator.git"
+    "url": "https://github.com/efaslantas/vibe-coding-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/kullaniciadi/vibe-coding-generator/issues"
+    "url": "https://github.com/efaslantas/vibe-coding-generator/issues"
   },
-  "homepage": "https://github.com/kullaniciadi/vibe-coding-generator#readme",
+  "homepage": "https://github.com/efaslantas/vibe-coding-generator#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

@@ -23,7 +23,7 @@ Vibe Coding Generator, Claude AI ve diğer LLM'lerle çalışırken projeleriniz
 
 ```bash
 # Repository'yi klonlayın
-git clone https://github.com/kullaniciadi/vibe-coding-generator.git
+git clone https://github.com/efaslantas/vibe-coding-generator.git
 
 # Proje dizinine gidin
 cd vibe-coding-generator
