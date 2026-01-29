@@ -84,16 +84,9 @@ export interface Translations {
   catFrontend: string;
   catBackend: string;
   catDatabase: string;
-  catSearch: string;
-  catMessageQueue: string;
   catCloud: string;
   catCicd: string;
-  catObservability: string;
-  catSecrets: string;
   catContainer: string;
-  catIac: string;
-  catLoadBalancer: string;
-  catVirtualization: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -130,7 +123,7 @@ export const translations: Record<Language, Translations> = {
     validationMinTech: 'En az bir teknoloji secmelisiniz.',
     validationNoLang: 'Programlama dili secilmedi.',
     validationNoDb: 'Backend secildi ama veritabani secilmedi.',
-    validationNoContainer: 'Enterprise tier secildi ama container secilmedi.',
+    validationNoContainer: 'Tier 2 secildi ama container secilmedi.',
     validationNoObservability: 'Production icin observability onerilir.',
     validationNoCicd: 'CI/CD araci secilmedi.',
     validationK8sDocker: 'Kubernetes icin Docker gerekli.',
@@ -181,16 +174,9 @@ export const translations: Record<Language, Translations> = {
     catFrontend: 'Frontend Framework',
     catBackend: 'Backend Framework',
     catDatabase: 'Veritabani',
-    catSearch: 'Arama',
-    catMessageQueue: 'Message Queue',
-    catCloud: 'Cloud Provider',
+    catCloud: 'Cloud & Hosting',
     catCicd: 'CI/CD',
-    catObservability: 'Observability',
-    catSecrets: 'Secret Management',
-    catContainer: 'Container & Orchestration',
-    catIac: 'Infrastructure as Code',
-    catLoadBalancer: 'Load Balancer & Proxy',
-    catVirtualization: 'Virtualization & Backup',
+    catContainer: 'Container',
   },
   en: {
     // Header
@@ -225,7 +211,7 @@ export const translations: Record<Language, Translations> = {
     validationMinTech: 'You must select at least one technology.',
     validationNoLang: 'No programming language selected.',
     validationNoDb: 'Backend selected but no database.',
-    validationNoContainer: 'Enterprise tier selected but no container.',
+    validationNoContainer: 'Tier 2 selected but no container.',
     validationNoObservability: 'Observability recommended for production.',
     validationNoCicd: 'No CI/CD tool selected.',
     validationK8sDocker: 'Docker is required for Kubernetes.',
@@ -276,15 +262,8 @@ export const translations: Record<Language, Translations> = {
     catFrontend: 'Frontend Framework',
     catBackend: 'Backend Framework',
     catDatabase: 'Database',
-    catSearch: 'Search',
-    catMessageQueue: 'Message Queue',
-    catCloud: 'Cloud Provider',
+    catCloud: 'Cloud & Hosting',
     catCicd: 'CI/CD',
-    catObservability: 'Observability',
-    catSecrets: 'Secret Management',
-    catContainer: 'Container & Orchestration',
-    catIac: 'Infrastructure as Code',
-    catLoadBalancer: 'Load Balancer & Proxy',
-    catVirtualization: 'Virtualization & Backup',
+    catContainer: 'Container',
   },
 };

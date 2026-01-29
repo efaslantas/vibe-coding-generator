@@ -196,28 +196,13 @@ function App() {
       issues.push({ type: 'warning', message: t.validationNoDb });
     }
 
-    // Check container for production
-    if (selectedTiers.includes(3) && !selectedTechnologies.container?.length) {
-      issues.push({ type: 'warning', message: t.validationNoContainer });
-    }
-
-    // Check observability for production
-    if (selectedTiers.includes(3) && !selectedTechnologies.observability?.length) {
-      issues.push({ type: 'info', message: t.validationNoObservability });
-    }
-
     // Check CI/CD
     if (!selectedTechnologies.cicd?.length) {
       issues.push({ type: 'info', message: t.validationNoCicd });
     }
 
-    // Kubernetes without Docker
-    if (selectedTechnologies.container?.includes('kubernetes') && !selectedTechnologies.container?.includes('docker')) {
-      issues.push({ type: 'error', message: t.validationK8sDocker });
-    }
-
     return issues;
-  }, [selectedTechnologies, selectedTiers, t]);
+  }, [selectedTechnologies, t]);
 
   const handlePresetSelect = (preset: Preset) => {
     setSelectedPreset(preset);
@@ -294,16 +279,9 @@ function App() {
       frontend: 'catFrontend',
       backend: 'catBackend',
       database: 'catDatabase',
-      search: 'catSearch',
-      messagequeue: 'catMessageQueue',
       cloud: 'catCloud',
       cicd: 'catCicd',
-      observability: 'catObservability',
-      secrets: 'catSecrets',
       container: 'catContainer',
-      iac: 'catIac',
-      loadbalancer: 'catLoadBalancer',
-      virtualization: 'catVirtualization',
     };
     const key = categoryTranslations[categoryId];
     if (key && t[key]) return t[key] as string;

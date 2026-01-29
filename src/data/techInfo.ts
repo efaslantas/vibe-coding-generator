@@ -1,4 +1,4 @@
-// Technology descriptions and information
+// Technology descriptions and information for vibe coding
 
 export interface TechInfo {
   description: string;
@@ -28,47 +28,11 @@ export const techInfo: Record<string, TechInfo> = {
     pros: ['Cok hizli', 'Kolay concurrency', 'Tek binary'],
     cons: ['Generics yeni', 'Verbose hata yonetimi'],
   },
-  'java': {
-    description: 'Java - Kurumsal standart. JVM uzerinde calisir.',
-    useCase: 'Enterprise uygulamalar, Android, Buyuk sistemler',
-    pros: ['Olgun ekosistem', 'Performans', 'Guvenilir'],
-    cons: ['Verbose', 'Bellek tuketimi', 'Yavas baslangic'],
-  },
-  'kotlin': {
-    description: 'Kotlin - Modern JVM dili. Java\'nin gelismis hali.',
-    useCase: 'Android, Backend (Spring), Multiplatform',
-    pros: ['Null safety', 'Concise', 'Java uyumu'],
-    cons: ['Derleme suresi', 'Kucuk topluluk'],
-  },
-  'csharp': {
-    description: 'C# - Microsoft\'un guclü OOP dili.',
-    useCase: '.NET uygulamalar, Azure, Game dev (Unity)',
-    pros: ['Guclü IDE', 'LINQ', 'Async/await'],
-    cons: ['Windows odakli (eskiden)', 'Lisans karmasikligi'],
-  },
-  'swift': {
-    description: 'Swift - Apple\'in modern programlama dili.',
-    useCase: 'iOS/macOS uygulamalar, Backend (Vapor)',
-    pros: ['Guvenli', 'Hizli', 'Modern syntax'],
-    cons: ['Apple ekosistemi', 'ABI degisiklikleri'],
-  },
   'php': {
     description: 'PHP - Web\'in klasik server-side dili.',
     useCase: 'Web apps, CMS (WordPress), E-commerce',
     pros: ['Yaygin hosting', 'Kolay baslangic', 'Laravel/Symfony'],
     cons: ['Tutarsiz API', 'Eski imaj'],
-  },
-  'ruby': {
-    description: 'Ruby - Developer happiness odakli dil.',
-    useCase: 'Web apps (Rails), Scripting, DevOps',
-    pros: ['Elegant syntax', 'Rails', 'Developer friendly'],
-    cons: ['Performans', 'Azalan populerlik'],
-  },
-  'rust': {
-    description: 'Rust - Memory-safe sistem programlama dili.',
-    useCase: 'Systems programming, WebAssembly, CLI tools',
-    pros: ['Memory safety', 'Zero-cost abstractions', 'Performans'],
-    cons: ['Dik ogrenme egrisi', 'Compile suresi'],
   },
 
   // Frontend
@@ -152,18 +116,6 @@ export const techInfo: Record<string, TechInfo> = {
     pros: ['Basit', 'Esnek', 'Kolay ogrenilir'],
     cons: ['No batteries', 'Manual setup'],
   },
-  'spring': {
-    description: 'Spring Boot - Java\'nin enterprise framework\'u.',
-    useCase: 'Enterprise apps, Microservices, Buyuk sistemler',
-    pros: ['Production-ready', 'Genis ekosistem', 'Guvenlik'],
-    cons: ['Ogrenme egrisi', 'Memory', 'Complexity'],
-  },
-  'aspnet': {
-    description: 'ASP.NET Core - Microsoft\'un cross-platform framework\'u.',
-    useCase: 'Enterprise API, Azure apps, Microsoft stack',
-    pros: ['Performans', 'Cross-platform', 'Guvenlik'],
-    cons: ['Microsoft bagimliligi', 'Ogrenim'],
-  },
   'gin': {
     description: 'Gin - Go\'nun en populer web framework\'u.',
     useCase: 'High-performance API, Microservices',
@@ -175,12 +127,6 @@ export const techInfo: Record<string, TechInfo> = {
     useCase: 'Web apps, APIs, SaaS products',
     pros: ['Elegant syntax', 'Ecosystem (Forge, Vapor)', 'Blade templating'],
     cons: ['PHP bagimliligi', 'Performance'],
-  },
-  'rails': {
-    description: 'Ruby on Rails - Convention over configuration framework.',
-    useCase: 'Rapid prototyping, Startups, Full-stack apps',
-    pros: ['Hizli gelistirme', 'Convention', 'Mature ecosystem'],
-    cons: ['Performans', 'Scaling', 'Ruby ogrenmek lazim'],
   },
 
   // Database
@@ -195,12 +141,6 @@ export const techInfo: Record<string, TechInfo> = {
     useCase: 'Web apps, Read-heavy workloads',
     pros: ['Basit', 'Hizli read', 'Yaygin hosting'],
     cons: ['Eksik features', 'Oracle sahipligi'],
-  },
-  'mssql': {
-    description: 'Microsoft SQL Server - Enterprise SQL veritabani.',
-    useCase: 'Enterprise apps, .NET stack, BI',
-    pros: ['Entegrasyon', 'BI tools', 'Support'],
-    cons: ['Lisans maliyeti', 'Windows odakli'],
   },
   'mongodb': {
     description: 'MongoDB - Document-based NoSQL veritabani.',
@@ -245,47 +185,7 @@ export const techInfo: Record<string, TechInfo> = {
     cons: ['Concurrent writes', 'No user management'],
   },
 
-  // Search
-  'elasticsearch': {
-    description: 'Elasticsearch - Distributed search ve analytics engine.',
-    useCase: 'Full-text search, Log analytics, APM',
-    pros: ['Hizli arama', 'Scalable', 'Real-time'],
-    cons: ['Resource intensive', 'Operasyonel zorluk'],
-  },
-
-  // Message Queue
-  'kafka': {
-    description: 'Apache Kafka - Distributed event streaming platform.',
-    useCase: 'Event sourcing, Log aggregation, Stream processing',
-    pros: ['High throughput', 'Durable', 'Replay'],
-    cons: ['Operasyonel zorluk', 'Overkill for simple'],
-  },
-  'rabbitmq': {
-    description: 'RabbitMQ - Traditional message broker.',
-    useCase: 'Task queues, RPC, Routing',
-    pros: ['Flexible routing', 'Protokol destegi', 'Kolay'],
-    cons: ['Throughput limiti', 'No replay'],
-  },
-  'redis-streams': {
-    description: 'Redis Streams - Redis\'in event streaming ozelligi.',
-    useCase: 'Lightweight streaming, Already using Redis',
-    pros: ['Basit', 'Zaten Redis var', 'Hizli'],
-    cons: ['Limited features', 'Memory-bound'],
-  },
-
   // Cloud
-  'azure': {
-    description: 'Microsoft Azure - Enterprise cloud platform.',
-    useCase: 'Enterprise apps, Microsoft stack, Hybrid cloud',
-    pros: ['Enterprise features', 'AD entegrasyonu', 'Hybrid'],
-    cons: ['Karmasik UI', 'Dokumantasyon'],
-  },
-  'gcp': {
-    description: 'Google Cloud Platform - Google\'in cloud servisleri.',
-    useCase: 'Data/ML workloads, Kubernetes (GKE), BigQuery',
-    pros: ['Data/ML araclari', 'GKE', 'Global network'],
-    cons: ['Kucuk market share', 'Support'],
-  },
   'vercel': {
     description: 'Vercel - Frontend deployment platform. Next.js\'in evi.',
     useCase: 'Frontend/Jamstack deploy, Serverless functions, Edge',
@@ -336,76 +236,6 @@ export const techInfo: Record<string, TechInfo> = {
     pros: ['Hizli', 'Docker native', 'Good caching', 'Parallelism'],
     cons: ['Maliyet', 'Complexity'],
   },
-  'jenkins': {
-    description: 'Jenkins - En yaygin self-hosted CI/CD araci.',
-    useCase: 'Complex pipelines, Legacy systems, Custom needs',
-    pros: ['Plugin ekosistemi', 'Esneklik', 'Self-hosted'],
-    cons: ['Eski UI', 'Maintenance', 'Guvenlik'],
-  },
-  'argocd': {
-    description: 'ArgoCD - Kubernetes icin GitOps CD araci.',
-    useCase: 'Kubernetes deployments, GitOps',
-    pros: ['GitOps native', 'UI', 'Sync status'],
-    cons: ['K8s only', 'Learning curve'],
-  },
-
-  // Observability
-  'prometheus': {
-    description: 'Prometheus - Metrics collection ve alerting.',
-    useCase: 'Metrics, Alerting, Kubernetes monitoring',
-    pros: ['Pull-based', 'PromQL', 'K8s native'],
-    cons: ['Long-term storage', 'High cardinality'],
-  },
-  'grafana': {
-    description: 'Grafana - Visualization ve dashboarding platform.',
-    useCase: 'Dashboards, Alerting, Data exploration',
-    pros: ['Gorsellestirme', 'Multi-source', 'Alerting'],
-    cons: ['Complexity', 'Resource usage'],
-  },
-  'loki': {
-    description: 'Loki - Prometheus-inspired log aggregation.',
-    useCase: 'Log aggregation, Grafana entegrasyonu',
-    pros: ['Label-based', 'Cost effective', 'Grafana native'],
-    cons: ['No full-text index', 'Query limitleri'],
-  },
-  'jaeger': {
-    description: 'Jaeger - Distributed tracing system.',
-    useCase: 'Microservices tracing, Latency analysis',
-    pros: ['OpenTracing', 'UI', 'Root cause analysis'],
-    cons: ['Storage', 'Instrumentation effort'],
-  },
-  'uptime-robot': {
-    description: 'Uptime Robot - Website monitoring service.',
-    useCase: 'Uptime monitoring, SSL monitoring, Alerting',
-    pros: ['Basit', 'Ucretsiz tier', 'Global'],
-    cons: ['Limited features', 'External service'],
-  },
-  'pyroscope': {
-    description: 'Pyroscope - Continuous profiling platform.',
-    useCase: 'CPU/Memory profiling, Performance analysis',
-    pros: ['Low overhead', 'Flame graphs', 'Continuous'],
-    cons: ['Yeni', 'Limited languages'],
-  },
-
-  // Secrets
-  'vault': {
-    description: 'HashiCorp Vault - Secret management solution.',
-    useCase: 'Secret storage, Dynamic secrets, Encryption',
-    pros: ['Feature-rich', 'Dynamic secrets', 'Audit'],
-    cons: ['Complexity', 'Operasyonel yuk'],
-  },
-  'azure-keyvault': {
-    description: 'Azure Key Vault - Azure\'un secret management servisi.',
-    useCase: 'Azure apps, Managed secrets, HSM',
-    pros: ['Azure native', 'Managed', 'HSM'],
-    cons: ['Azure only', 'Maliyet'],
-  },
-  'gitlab-vars': {
-    description: 'GitLab CI Variables - GitLab\'in secret storage\'i.',
-    useCase: 'CI/CD secrets, Simple projects',
-    pros: ['Entegre', 'Basit', 'Ucretsiz'],
-    cons: ['Limited features', 'CI/CD only'],
-  },
 
   // Container
   'docker': {
@@ -414,133 +244,11 @@ export const techInfo: Record<string, TechInfo> = {
     pros: ['Standart', 'Ekosistem', 'Portability'],
     cons: ['Guvenlik', 'Image size', 'Networking'],
   },
-  'kubernetes': {
-    description: 'Kubernetes - Container orchestration platform.',
-    useCase: 'Production containers, Scaling, Service mesh',
-    pros: ['Declarative', 'Self-healing', 'Ecosystem'],
-    cons: ['Complexity', 'Learning curve', 'Resource'],
-  },
   'docker-compose': {
     description: 'Docker Compose - Multi-container Docker tool.',
     useCase: 'Local dev, Simple deployments, Testing',
     pros: ['Basit', 'YAML', 'Development'],
     cons: ['Production limiti', 'No orchestration'],
-  },
-
-  // IaC
-  'terraform': {
-    description: 'Terraform - Infrastructure as Code tool.',
-    useCase: 'Cloud provisioning, Multi-cloud, GitOps',
-    pros: ['Declarative', 'Multi-cloud', 'State management'],
-    cons: ['State complexity', 'HCL learning'],
-  },
-  'ansible': {
-    description: 'Ansible - Agentless automation ve configuration management.',
-    useCase: 'Server configuration, App deployment, Orchestration',
-    pros: ['Agentless', 'YAML syntax', 'Idempotent'],
-    cons: ['Python dependency', 'Slow for large scale'],
-  },
-
-  // Container extras
-  'openshift': {
-    description: 'OpenShift - Red Hat\'in enterprise Kubernetes platformu.',
-    useCase: 'Enterprise K8s, Hybrid cloud, CI/CD entegrasyonu',
-    pros: ['Enterprise support', 'Built-in CI/CD', 'Security'],
-    cons: ['Maliyet', 'Complexity', 'Resource heavy'],
-  },
-  'rancher': {
-    description: 'Rancher - Multi-cluster Kubernetes management.',
-    useCase: 'Multi-cluster yonetimi, Hybrid/Multi-cloud K8s',
-    pros: ['Multi-cluster', 'Easy UI', 'App catalog'],
-    cons: ['Additional layer', 'Learning curve'],
-  },
-  'helm': {
-    description: 'Helm - Kubernetes package manager.',
-    useCase: 'K8s app packaging, Release management, Charts',
-    pros: ['Templating', 'Versioning', 'Rollback'],
-    cons: ['Complexity', 'Chart maintenance'],
-  },
-  'istio': {
-    description: 'Istio - Service mesh for microservices.',
-    useCase: 'Traffic management, Security, Observability',
-    pros: ['mTLS', 'Traffic control', 'Observability'],
-    cons: ['Resource overhead', 'Complexity', 'Learning curve'],
-  },
-
-  // Cloud extras
-  'aws': {
-    description: 'Amazon Web Services - En buyuk cloud provider.',
-    useCase: 'Her tur cloud workload, Startup to Enterprise',
-    pros: ['Genis servis yelpazesi', 'Global', 'Olgun'],
-    cons: ['Karmasik fiyatlandirma', 'Vendor lock-in'],
-  },
-
-  // CI/CD extras
-  'azure-devops': {
-    description: 'Azure DevOps - Microsoft\'un CI/CD ve proje yonetim platformu.',
-    useCase: 'Microsoft stack, Enterprise CI/CD, Agile',
-    pros: ['Entegre suite', 'Azure native', 'Boards'],
-    cons: ['UI complexity', 'Microsoft bagimli'],
-  },
-  'bamboo': {
-    description: 'Bamboo - Atlassian\'in CI/CD araci.',
-    useCase: 'Jira entegrasyonu, Enterprise CI/CD',
-    pros: ['Atlassian suite', 'Build agents', 'Deployment'],
-    cons: ['Lisans maliyeti', 'Eski UI'],
-  },
-  'sonarqube': {
-    description: 'SonarQube - Code quality ve security analysis.',
-    useCase: 'Static code analysis, Security scanning, Quality gates',
-    pros: ['Multi-language', 'Security rules', 'Quality gates'],
-    cons: ['Resource heavy', 'False positives'],
-  },
-
-  // Observability extras
-  'kibana': {
-    description: 'Kibana - Elasticsearch icin visualization platform.',
-    useCase: 'Log visualization, Dashboards, Search UI',
-    pros: ['Powerful viz', 'Elasticsearch native', 'Dashboards'],
-    cons: ['ES bagimli', 'Resource usage'],
-  },
-  'logstash': {
-    description: 'Logstash - Server-side data processing pipeline.',
-    useCase: 'Log parsing, Data transformation, ETL',
-    pros: ['Flexible', 'Many plugins', 'Powerful filters'],
-    cons: ['Resource heavy', 'JVM based'],
-  },
-  'graylog': {
-    description: 'Graylog - Centralized log management platform.',
-    useCase: 'Log aggregation, Analysis, Alerting',
-    pros: ['Open source', 'Stream processing', 'Alerting'],
-    cons: ['MongoDB/ES dependency', 'Scaling'],
-  },
-
-  // Load Balancer
-  'nginx': {
-    description: 'Nginx - High-performance web server ve reverse proxy.',
-    useCase: 'Web serving, Reverse proxy, Load balancing',
-    pros: ['Cok hizli', 'Low memory', 'Flexible config'],
-    cons: ['Config syntax', 'Dynamic upstream'],
-  },
-  'haproxy': {
-    description: 'HAProxy - Reliable high availability load balancer.',
-    useCase: 'TCP/HTTP load balancing, High availability',
-    pros: ['Ultra hizli', 'Reliable', 'Health checks'],
-    cons: ['Config complexity', 'No caching'],
-  },
-
-  // Virtualization & Backup
-  'vmware': {
-    description: 'VMware vSphere - Enterprise virtualization platform.',
-    useCase: 'Server virtualization, Private cloud, VDI',
-    pros: ['Enterprise standard', 'vMotion', 'Ecosystem'],
-    cons: ['Lisans maliyeti', 'Complexity'],
-  },
-  'veeam': {
-    description: 'Veeam - Backup ve disaster recovery cozumu.',
-    useCase: 'VM backup, DR, Cloud backup',
-    pros: ['Instant recovery', 'Replication', 'Cloud support'],
-    cons: ['Lisans maliyeti', 'Agent management'],
   },
 };
 

@@ -1,4 +1,4 @@
-// Technology relationships and dependencies
+// Technology relationships and dependencies for vibe coding
 
 export interface TechRelationship {
   // When this tech is selected, these must also be selected (auto-select)
@@ -88,19 +88,6 @@ export const techRelationships: Record<string, TechRelationship> = {
       { category: 'database', techs: ['postgresql', 'sqlite'] },
     ],
   },
-  'spring': {
-    requires: [{ category: 'languages', techs: ['java'] }],
-    recommends: [
-      { category: 'database', techs: ['postgresql', 'mysql'] },
-    ],
-  },
-  'aspnet': {
-    requires: [{ category: 'languages', techs: ['csharp'] }],
-    recommends: [
-      { category: 'database', techs: ['mssql', 'postgresql'] },
-      { category: 'cloud', techs: ['azure'] },
-    ],
-  },
   'gin': {
     requires: [{ category: 'languages', techs: ['go'] }],
     recommends: [
@@ -113,27 +100,6 @@ export const techRelationships: Record<string, TechRelationship> = {
       { category: 'database', techs: ['mysql', 'postgresql'] },
     ],
   },
-  'rails': {
-    requires: [{ category: 'languages', techs: ['ruby'] }],
-    recommends: [
-      { category: 'database', techs: ['postgresql'] },
-    ],
-  },
-
-  // Kotlin backend
-  'kotlin': {
-    recommends: [
-      { category: 'backend', techs: ['spring'] },
-      { category: 'database', techs: ['postgresql'] },
-    ],
-  },
-
-  // Swift
-  'swift': {
-    recommends: [
-      { category: 'cloud', techs: ['azure'] },
-    ],
-  },
 
   // Database relationships
   'postgresql': {
@@ -144,12 +110,6 @@ export const techRelationships: Record<string, TechRelationship> = {
   'mysql': {
     recommends: [
       { category: 'database', techs: ['redis'] },
-    ],
-  },
-  'mssql': {
-    recommends: [
-      { category: 'cloud', techs: ['azure'] },
-      { category: 'languages', techs: ['csharp'] },
     ],
   },
   'mongodb': {
@@ -183,220 +143,15 @@ export const techRelationships: Record<string, TechRelationship> = {
     ],
   },
 
-  // Kubernetes → Docker
-  'kubernetes': {
-    requires: [{ category: 'container', techs: ['docker'] }],
-    recommends: [
-      { category: 'cicd', techs: ['argocd', 'gitlab-ci'] },
-      { category: 'observability', techs: ['prometheus', 'grafana'] },
-      { category: 'iac', techs: ['terraform'] },
-    ],
-  },
-
   // Docker Compose - simpler setup
   'docker-compose': {
     requires: [{ category: 'container', techs: ['docker'] }],
-  },
-
-  // ArgoCD → Kubernetes
-  'argocd': {
-    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
-    recommends: [
-      { category: 'cicd', techs: ['gitlab-ci'] },
-    ],
-  },
-
-  // Observability stack relationships
-  'grafana': {
-    recommends: [
-      { category: 'observability', techs: ['prometheus', 'loki'] },
-    ],
-  },
-  'prometheus': {
-    recommends: [
-      { category: 'observability', techs: ['grafana'] },
-    ],
-  },
-  'loki': {
-    recommends: [
-      { category: 'observability', techs: ['grafana'] },
-    ],
-  },
-  'jaeger': {
-    recommends: [
-      { category: 'observability', techs: ['grafana'] },
-    ],
-  },
-
-  // Kafka - enterprise messaging
-  'kafka': {
-    recommends: [
-      { category: 'container', techs: ['kubernetes'] },
-      { category: 'backend', techs: ['spring'] },
-    ],
-  },
-
-  // Terraform
-  'terraform': {
-    recommends: [
-      { category: 'cloud', techs: ['azure'] },
-      { category: 'container', techs: ['kubernetes'] },
-      { category: 'cicd', techs: ['gitlab-ci'] },
-    ],
-  },
-
-  // Azure
-  'azure': {
-    recommends: [
-      { category: 'secrets', techs: ['azure-keyvault'] },
-      { category: 'container', techs: ['kubernetes'] },
-    ],
-  },
-
-  // Vault
-  'vault': {
-    recommends: [
-      { category: 'container', techs: ['kubernetes'] },
-    ],
-  },
-
-  // Elasticsearch
-  'elasticsearch': {
-    recommends: [
-      { category: 'observability', techs: ['grafana', 'kibana', 'logstash'] },
-    ],
-  },
-
-  // OpenShift → Docker
-  'openshift': {
-    requires: [{ category: 'container', techs: ['docker'] }],
-    recommends: [
-      { category: 'cicd', techs: ['jenkins', 'argocd'] },
-      { category: 'observability', techs: ['prometheus', 'grafana'] },
-    ],
-  },
-
-  // Rancher → Kubernetes
-  'rancher': {
-    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
-    recommends: [
-      { category: 'container', techs: ['helm'] },
-    ],
-  },
-
-  // Helm → Kubernetes
-  'helm': {
-    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
-    recommends: [
-      { category: 'cicd', techs: ['argocd'] },
-    ],
-  },
-
-  // Istio → Kubernetes
-  'istio': {
-    requires: [{ category: 'container', techs: ['kubernetes', 'docker'] }],
-    recommends: [
-      { category: 'observability', techs: ['jaeger', 'prometheus', 'grafana'] },
-    ],
-  },
-
-  // AWS
-  'aws': {
-    recommends: [
-      { category: 'container', techs: ['kubernetes'] },
-      { category: 'iac', techs: ['terraform'] },
-    ],
-  },
-
-  // GCP
-  'gcp': {
-    recommends: [
-      { category: 'container', techs: ['kubernetes'] },
-      { category: 'iac', techs: ['terraform'] },
-    ],
   },
 
   // CircleCI
   'circleci': {
     recommends: [
       { category: 'container', techs: ['docker'] },
-    ],
-  },
-
-  // Azure DevOps
-  'azure-devops': {
-    recommends: [
-      { category: 'cloud', techs: ['azure'] },
-      { category: 'languages', techs: ['csharp'] },
-    ],
-  },
-
-  // Bamboo
-  'bamboo': {
-    recommends: [
-      { category: 'languages', techs: ['java'] },
-    ],
-  },
-
-  // SonarQube
-  'sonarqube': {
-    recommends: [
-      { category: 'cicd', techs: ['gitlab-ci', 'jenkins'] },
-    ],
-  },
-
-  // Ansible
-  'ansible': {
-    recommends: [
-      { category: 'iac', techs: ['terraform'] },
-      { category: 'container', techs: ['docker'] },
-    ],
-  },
-
-  // ELK Stack relationships
-  'kibana': {
-    requires: [{ category: 'search', techs: ['elasticsearch'] }],
-    recommends: [
-      { category: 'observability', techs: ['logstash'] },
-    ],
-  },
-  'logstash': {
-    recommends: [
-      { category: 'search', techs: ['elasticsearch'] },
-      { category: 'observability', techs: ['kibana'] },
-    ],
-  },
-
-  // Graylog
-  'graylog': {
-    recommends: [
-      { category: 'search', techs: ['elasticsearch'] },
-      { category: 'database', techs: ['mongodb'] },
-    ],
-  },
-
-  // Load Balancers
-  'nginx': {
-    recommends: [
-      { category: 'container', techs: ['docker', 'kubernetes'] },
-    ],
-  },
-  'haproxy': {
-    recommends: [
-      { category: 'container', techs: ['kubernetes'] },
-    ],
-  },
-
-  // Virtualization
-  'vmware': {
-    recommends: [
-      { category: 'virtualization', techs: ['veeam'] },
-      { category: 'iac', techs: ['ansible', 'terraform'] },
-    ],
-  },
-  'veeam': {
-    recommends: [
-      { category: 'virtualization', techs: ['vmware'] },
     ],
   },
 };

@@ -236,56 +236,7 @@ export const presetInfo: Record<string, PresetInfo> = {
     ],
   },
 
-  // ========== ENTERPRISE STACKS ==========
-  'full-stack': {
-    description: 'Kurumsal full-stack. Kubernetes, observability, secret management dahil.',
-    useCase: 'Enterprise SaaS, buyuk olcekli uygulamalar',
-    includes: [
-      'React + Node.js',
-      'PostgreSQL + Redis',
-      'Kubernetes + Docker',
-      'Prometheus + Grafana + Loki',
-      'Vault + Azure KeyVault',
-      'GitLab CI + ArgoCD',
-    ],
-    bestFor: [
-      'Buyuk ekipler (10+ developer)',
-      'Enterprise musteriler',
-      'High availability gerektiren sistemler',
-      'Compliance gereksinimleri',
-    ],
-    notFor: [
-      'Startup MVP',
-      'Kucuk ekipler',
-      'Hizli prototip',
-      'Budget-limited projeler',
-    ],
-  },
-
-  'microservices': {
-    description: 'Event-driven microservices. Kafka, distributed tracing, service mesh.',
-    useCase: 'Large-scale distributed systems, event sourcing',
-    includes: [
-      'Multiple languages (JS/Go)',
-      'Kafka + Redis Streams',
-      'Kubernetes + Istio',
-      'Jaeger tracing',
-      'Full observability stack',
-    ],
-    bestFor: [
-      'Cok buyuk sistemler',
-      'Farkli ekiplerin bagimsiz deploy etmesi',
-      'Event-driven architecture',
-      'Polyglot programming',
-    ],
-    notFor: [
-      'Kucuk-orta projeler',
-      'Tek ekip',
-      'Basit CRUD apps',
-      'Operasyonel complexity istemeyenler',
-    ],
-  },
-
+  // ========== SIMPLE PRODUCTION ==========
   'simple-api': {
     description: 'Production-ready basit API. Docker Compose ile kolay deploy.',
     useCase: 'Internal API, MVP backend, webhook handler',
@@ -293,11 +244,9 @@ export const presetInfo: Record<string, PresetInfo> = {
       'FastAPI',
       'PostgreSQL + Redis',
       'Docker Compose',
-      'Prometheus + Grafana',
       'GitLab CI',
     ],
     bestFor: [
-      'Kubernetes istemeyenler',
       'Docker Compose yeterli olanlar',
       'Orta olcekli projeler',
       'Hizli production deploy',
@@ -306,99 +255,6 @@ export const presetInfo: Record<string, PresetInfo> = {
       'High availability',
       'Auto-scaling gerektiren sistemler',
       'Multi-region deployment',
-    ],
-  },
-
-  'enterprise-java': {
-    description: 'Kurumsal Java/Spring stack. Bank, telco, enterprise-grade.',
-    useCase: 'Banking, insurance, large enterprise systems',
-    includes: [
-      'Spring Boot',
-      'Kafka + RabbitMQ',
-      'PostgreSQL',
-      'Full observability',
-      'Jenkins + ArgoCD',
-    ],
-    bestFor: [
-      'Java ekipleri',
-      'Enterprise musteriler',
-      'Legacy sistem entegrasyonu',
-      'Transaction-heavy sistemler',
-    ],
-    notFor: [
-      'Startup',
-      'Hizli prototip',
-      'Kucuk ekipler',
-      'Modern stack isteyenler',
-    ],
-  },
-
-  'dotnet-azure': {
-    description: 'Microsoft stack + Azure native. C# + ASP.NET Core + Azure services.',
-    useCase: 'Azure-first projects, Microsoft shop, enterprise .NET',
-    includes: [
-      'ASP.NET Core',
-      'React frontend',
-      'MSSQL + Redis',
-      'Azure KeyVault',
-      'Azure DevOps opsiyonel',
-    ],
-    bestFor: [
-      '.NET ekipleri',
-      'Azure commitment olanlar',
-      'Windows Server altyapisi',
-      'Enterprise Microsoft shop',
-    ],
-    notFor: [
-      'Multi-cloud',
-      'Linux-only ortamlar',
-      'Open source tercihi',
-    ],
-  },
-
-  'mobile-backend': {
-    description: 'iOS/Android backend. Push notifications, real-time sync icin optimize.',
-    useCase: 'Mobile app backend, real-time sync, offline-first apps',
-    includes: [
-      'Node.js',
-      'MongoDB + Redis',
-      'Push notification support',
-      'Kubernetes',
-      'Mobile-friendly auth',
-    ],
-    bestFor: [
-      'Mobile-first projeler',
-      'Real-time sync gerektiren apps',
-      'Offline-first yaklasim',
-      'Cross-platform mobile',
-    ],
-    notFor: [
-      'Web-only projeler',
-      'Heavy admin panel',
-      'Content management',
-    ],
-  },
-
-  'data-platform': {
-    description: 'Data processing platform. ETL, analytics, ML pipeline.',
-    useCase: 'Data lake, analytics platform, ML pipelines',
-    includes: [
-      'Python + FastAPI',
-      'Kafka',
-      'Elasticsearch',
-      'PostgreSQL + MongoDB',
-      'Kubernetes',
-    ],
-    bestFor: [
-      'Data engineering ekipleri',
-      'Analytics platformlari',
-      'ML/AI projeleri',
-      'Big data islemleri',
-    ],
-    notFor: [
-      'Simple CRUD apps',
-      'User-facing web apps',
-      'Real-time web apps',
     ],
   },
 
