@@ -337,7 +337,7 @@ export function validateSelection(
 ): { valid: boolean; missing: { tech: string; requires: { category: string; techs: string[] }[] }[] } {
   const missing: { tech: string; requires: { category: string; techs: string[] }[] }[] = [];
 
-  for (const [_category, techs] of Object.entries(selectedTechnologies)) {
+  for (const techs of Object.values(selectedTechnologies)) {
     for (const techId of techs) {
       const requirements = getRequiredTechs(techId);
       for (const req of requirements) {

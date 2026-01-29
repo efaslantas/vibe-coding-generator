@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import JSZip from 'jszip';
+import DOMPurify from 'dompurify';
 import { categories, tiers } from './data/techStack';
 import { presets } from './data/presets';
 import { getTechInfo } from './data/techInfo';
@@ -40,10 +41,19 @@ function App() {
   const [previewMode, setPreviewMode] = useState<'raw' | 'rendered'>('rendered');
   const [excludedTemplates, setExcludedTemplates] = useState<string[]>([]);
 
+  // Validate and sanitize project name
+  const sanitizeProjectName = (name: string): string => {
+    // Remove potentially dangerous characters, keep alphanumeric, spaces, hyphens, underscores
+    return name
+      .replace(/[<>'"&;`$\\]/g, '')
+      .slice(0, 100); // Max 100 characters
+  };
+
   // Save to localStorage when values change
   const handleProjectNameChange = useCallback((name: string) => {
-    setProjectName(name);
-    setSavedProjectName(name);
+    const sanitized = sanitizeProjectName(name);
+    setProjectName(sanitized);
+    setSavedProjectName(sanitized);
   }, [setSavedProjectName]);
 
   const handleTechnologiesChange = useCallback((techs: Record<string, string[]>) => {
@@ -106,8 +116,9 @@ function App() {
   const validationIssues = useMemo(() => {
     const issues: { type: 'error' | 'warning' | 'info'; message: string }[] = [];
 
-    // Check minimum selections
-    if (Object.keys(selectedTechnologies).length === 0 || getSelectionCount() === 0) {
+    // Check minimum selections (inline count calculation to avoid dependency issues)
+    const selectionCount = Object.values(selectedTechnologies).reduce((sum, arr) => sum + arr.length, 0);
+    if (Object.keys(selectedTechnologies).length === 0 || selectionCount === 0) {
       issues.push({ type: 'error', message: t.validationMinTech });
     }
 
@@ -319,9 +330,37 @@ function App() {
     return true;
   };
 
-  // Simple markdown to HTML converter
+  // Escape HTML entities to prevent XSS
+  const escapeHtml = (text: string): string => {
+    const htmlEscapes: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+    };
+    return text.replace(/[&<>"']/g, (char) => htmlEscapes[char]);
+  };
+
+  // Simple markdown to HTML converter with XSS protection
   const renderMarkdown = (md: string): string => {
-    let html = md
+    // First, escape HTML entities in the raw markdown
+    // But preserve markdown syntax characters
+    const escapeNonMarkdown = (text: string): string => {
+      // Escape < and > that are not part of markdown
+      return text
+        .replace(/</g, '&lt;')
+        .replace(/>/g, (_, offset, str) => {
+          // Keep > for blockquotes at line start
+          const lineStart = str.lastIndexOf('\n', offset - 1) + 1;
+          if (offset === lineStart || str.slice(lineStart, offset).trim() === '') {
+            return '>';
+          }
+          return '&gt;';
+        });
+    };
+
+    let html = escapeNonMarkdown(md)
       // Code blocks
       .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
       // Inline code
@@ -344,10 +383,10 @@ function App() {
       .replace(/^- (.*$)/gm, '<li>$1</li>')
       // Ordered list items
       .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
-      // Tables (basic support)
+      // Tables (basic support) - escape cell content
       .replace(/\|(.+)\|/g, (match) => {
         const cells = match.split('|').filter(c => c.trim());
-        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+        return '<tr>' + cells.map(c => `<td>${escapeHtml(c.trim())}</td>`).join('') + '</tr>';
       })
       // Line breaks
       .replace(/\n\n/g, '</p><p>')
@@ -366,7 +405,11 @@ function App() {
     html = html.replace(/<p>(<li>)/g, '<ul>$1');
     html = html.replace(/(<\/li>)<\/p>/g, '$1</ul>');
 
-    return html;
+    // Sanitize with DOMPurify to catch any remaining XSS vectors
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ['h1', 'h2', 'h3', 'p', 'pre', 'code', 'strong', 'em', 'hr', 'blockquote', 'ul', 'li', 'tr', 'td', 'table', 'br'],
+      ALLOWED_ATTR: ['class'],
+    });
   };
 
   return (
