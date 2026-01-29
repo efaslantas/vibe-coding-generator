@@ -496,19 +496,54 @@ src/
 }
 
 function generateDebuggingTemplate(ctx: TemplateContext): string {
-  return `# Debugging Guide - ${ctx.projectName}
+  let content = `# Debugging Guide - ${ctx.projectName}
 
 ---
 
 ## Genel Debug
 
 \`\`\`bash
-# Logs
+`;
+
+  // Framework-specific debug commands
+  if (ctx.selectedFrontend.includes('nextjs') || ctx.selectedFrontend.includes('react')) {
+    content += `# Logs
+npm run dev 2>&1 | tee debug.log
+
+# Debug mode
+NODE_OPTIONS='--inspect' npm run dev
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `# Debug mode
+python manage.py runserver --verbosity 2
+
+# Django shell
+python manage.py shell
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `# Debug mode with reload
+uvicorn main:app --reload --log-level debug
+
+# Python debugger
+python -m pdb main.py
+`;
+  } else if (ctx.selectedBackend.includes('gin')) {
+    content += `# Debug mode
+GIN_MODE=debug go run main.go
+
+# Delve debugger
+dlv debug main.go
+`;
+  } else {
+    content += `# Logs
 npm run logs
 
 # Debug mode
 DEBUG=* npm run dev
-\`\`\`
+`;
+  }
+
+  content += `\`\`\`
 
 ---
 
@@ -517,7 +552,509 @@ DEBUG=* npm run dev
 | Sorun | Cozum |
 |-------|-------|
 | Port kullanımda | PORT env degistir |
-| DB connection | Connection string kontrol |`;
+| DB connection | Connection string kontrol |
+`;
+
+  // Add database-specific debugging
+  if (ctx.selectedDb.includes('postgresql')) {
+    content += `| PostgreSQL baglanti | \`psql -h localhost -U user -d db\` ile test |
+`;
+  }
+  if (ctx.selectedDb.includes('redis')) {
+    content += `| Redis baglanti | \`redis-cli ping\` ile test |
+`;
+  }
+  if (ctx.selectedContainer.includes('docker')) {
+    content += `| Container calismıyor | \`docker logs <container>\` kontrol |
+`;
+  }
+
+  return content;
+}
+
+function generateContributingTemplate(ctx: TemplateContext): string {
+  let content = `# Contributing Guide - ${ctx.projectName}
+
+---
+
+## Baslamadan Once
+
+1. Repo'yu fork et
+2. Local'e clone et
+3. Branch olustur: \`git checkout -b feature/isim\`
+
+---
+
+## Development Ortami
+
+`;
+
+  // Framework-specific setup
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `### Gereksinimler
+- Node.js 18+
+- npm veya yarn
+
+### Kurulum
+\`\`\`bash
+npm install
+npm run dev
+\`\`\`
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `### Gereksinimler
+- Python 3.10+
+- pip veya poetry
+
+### Kurulum
+\`\`\`bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+\`\`\`
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `### Gereksinimler
+- Go 1.21+
+
+### Kurulum
+\`\`\`bash
+go mod download
+go run main.go
+\`\`\`
+`;
+  } else if (ctx.selectedLangs.includes('php')) {
+    content += `### Gereksinimler
+- PHP 8.1+
+- Composer
+
+### Kurulum
+\`\`\`bash
+composer install
+php artisan serve
+\`\`\`
+`;
+  }
+
+  content += `
+---
+
+## Commit Kurallari
+
+### Format
+\`\`\`
+<type>(<scope>): <description>
+
+[optional body]
+\`\`\`
+
+### Type'lar
+- \`feat\`: Yeni ozellik
+- \`fix\`: Bug fix
+- \`docs\`: Dokumantasyon
+- \`style\`: Formatting
+- \`refactor\`: Kod refactor
+- \`test\`: Test ekleme
+- \`chore\`: Build, config
+
+### Ornekler
+\`\`\`
+feat(auth): add JWT authentication
+fix(api): resolve null pointer in user service
+docs(readme): update installation guide
+\`\`\`
+
+---
+
+## Pull Request Sureci
+
+1. [ ] Testler geciyor
+2. [ ] Lint hatasiz
+3. [ ] PR description dolu
+4. [ ] Review istendi
+
+---
+
+## Code Style
+
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- ESLint + Prettier kullan
+- TypeScript strict mode
+- camelCase degiskenler
+- PascalCase componentler
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- Black formatter kullan
+- Type hints zorunlu
+- snake_case degiskenler
+- PEP 8 uyumlu
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `- gofmt kullan
+- golint uyumlu
+- camelCase (exported PascalCase)
+- Effective Go kurallari
+`;
+  }
+
+  content += `
+---
+
+## Sorular?
+
+Issue ac veya maintainer'lara ulas.`;
+
+  return content;
+}
+
+function generateSetupGuideTemplate(ctx: TemplateContext): string {
+  let content = `# Setup Guide - ${ctx.projectName}
+
+---
+
+## Gereksinimler
+
+`;
+
+  // Language requirements
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- [ ] Node.js 18+ (\`node -v\`)
+- [ ] npm 9+ (\`npm -v\`)
+`;
+  }
+  if (ctx.selectedLangs.includes('python')) {
+    content += `- [ ] Python 3.10+ (\`python --version\`)
+- [ ] pip (\`pip --version\`)
+`;
+  }
+  if (ctx.selectedLangs.includes('go')) {
+    content += `- [ ] Go 1.21+ (\`go version\`)
+`;
+  }
+  if (ctx.selectedLangs.includes('php')) {
+    content += `- [ ] PHP 8.1+ (\`php -v\`)
+- [ ] Composer (\`composer -V\`)
+`;
+  }
+
+  // Database requirements
+  if (ctx.selectedDb.includes('postgresql')) {
+    content += `- [ ] PostgreSQL 14+ (\`psql --version\`)
+`;
+  }
+  if (ctx.selectedDb.includes('mysql')) {
+    content += `- [ ] MySQL 8+ (\`mysql --version\`)
+`;
+  }
+  if (ctx.selectedDb.includes('mongodb')) {
+    content += `- [ ] MongoDB 6+ (\`mongod --version\`)
+`;
+  }
+  if (ctx.selectedDb.includes('redis')) {
+    content += `- [ ] Redis 7+ (\`redis-server --version\`)
+`;
+  }
+
+  // Container requirements
+  if (ctx.selectedContainer.includes('docker')) {
+    content += `- [ ] Docker (\`docker --version\`)
+`;
+  }
+  if (ctx.selectedContainer.includes('docker-compose')) {
+    content += `- [ ] Docker Compose (\`docker compose version\`)
+`;
+  }
+
+  content += `
+---
+
+## 1. Repo Clone
+
+\`\`\`bash
+git clone <repo-url>
+cd ${ctx.projectName.toLowerCase().replace(/\s+/g, '-')}
+\`\`\`
+
+---
+
+## 2. Environment Variables
+
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+### Gerekli Degiskenler
+
+| Degisken | Aciklama | Ornek |
+|----------|----------|-------|
+`;
+
+  if (ctx.selectedDb.includes('postgresql') || ctx.selectedDb.includes('mysql')) {
+    content += `| DATABASE_URL | DB connection string | postgresql://user:pass@localhost:5432/db |
+`;
+  }
+  if (ctx.selectedDb.includes('redis')) {
+    content += `| REDIS_URL | Redis connection | redis://localhost:6379 |
+`;
+  }
+  if (ctx.selectedDb.includes('supabase')) {
+    content += `| SUPABASE_URL | Supabase project URL | https://xxx.supabase.co |
+| SUPABASE_KEY | Supabase anon key | eyJxxx... |
+`;
+  }
+
+  content += `| NODE_ENV | Environment | development |
+
+---
+
+## 3. Bagimliliklari Yukle
+
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `\`\`\`bash
+npm install
+\`\`\`
+`;
+  }
+  if (ctx.selectedLangs.includes('python')) {
+    content += `\`\`\`bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\\Scripts\\activate
+pip install -r requirements.txt
+\`\`\`
+`;
+  }
+  if (ctx.selectedLangs.includes('go')) {
+    content += `\`\`\`bash
+go mod download
+\`\`\`
+`;
+  }
+  if (ctx.selectedLangs.includes('php')) {
+    content += `\`\`\`bash
+composer install
+\`\`\`
+`;
+  }
+
+  content += `
+---
+
+## 4. Database Setup
+
+`;
+
+  if (ctx.selectedDb.includes('prisma')) {
+    content += `\`\`\`bash
+npx prisma generate
+npx prisma db push  # veya npx prisma migrate dev
+\`\`\`
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `\`\`\`bash
+python manage.py migrate
+python manage.py createsuperuser
+\`\`\`
+`;
+  } else if (ctx.selectedBackend.includes('laravel')) {
+    content += `\`\`\`bash
+php artisan migrate
+php artisan db:seed
+\`\`\`
+`;
+  } else if (ctx.selectedDb.length > 0) {
+    content += `Veritabani migration komutlarini calistir.
+`;
+  }
+
+  content += `
+---
+
+## 5. Calistir
+
+`;
+
+  if (ctx.selectedContainer.includes('docker-compose')) {
+    content += `### Docker ile
+\`\`\`bash
+docker compose up -d
+\`\`\`
+
+### Manuel
+`;
+  }
+
+  if (ctx.selectedFrontend.includes('nextjs') || ctx.selectedFrontend.includes('react') || ctx.selectedFrontend.includes('vue') || ctx.selectedFrontend.includes('nuxt')) {
+    content += `\`\`\`bash
+npm run dev
+\`\`\`
+Tarayicida: http://localhost:3000
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `\`\`\`bash
+python manage.py runserver
+\`\`\`
+Tarayicida: http://localhost:8000
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `\`\`\`bash
+uvicorn main:app --reload
+\`\`\`
+API Docs: http://localhost:8000/docs
+`;
+  } else if (ctx.selectedBackend.includes('gin')) {
+    content += `\`\`\`bash
+go run main.go
+\`\`\`
+Tarayicida: http://localhost:8080
+`;
+  } else if (ctx.selectedBackend.includes('laravel')) {
+    content += `\`\`\`bash
+php artisan serve
+\`\`\`
+Tarayicida: http://localhost:8000
+`;
+  } else {
+    content += `\`\`\`bash
+npm run dev
+\`\`\`
+`;
+  }
+
+  content += `
+---
+
+## Sorun Giderme
+
+| Sorun | Cozum |
+|-------|-------|
+| Port mesgul | \`lsof -i :<port>\` ile kontrol |
+| Permission hatasi | \`chmod +x\` veya sudo |
+| Modul bulunamadi | Bagimliliklari tekrar yukle |`;
+
+  return content;
+}
+
+function generateADRTemplate(ctx: TemplateContext): string {
+  let content = `# Architecture Decision Records - ${ctx.projectName}
+
+---
+
+## ADR Nedir?
+
+Architecture Decision Record (ADR), projedeki onemli teknik kararlarin belgelendigi yapilandirilmis dokumantasyondur.
+
+---
+
+## ADR Template
+
+\`\`\`markdown
+# ADR-XXX: Karar Basligi
+
+## Durum
+[Proposed | Accepted | Deprecated | Superseded]
+
+## Context
+Kararin alinmasina neden olan durum ve kosullar.
+
+## Decision
+Alinan karar ve secilen yaklasim.
+
+## Consequences
+### Olumlu
+- ...
+
+### Olumsuz
+- ...
+
+## Alternatives Considered
+1. Alternatif 1 - Neden secilmedi
+2. Alternatif 2 - Neden secilmedi
+\`\`\`
+
+---
+
+## Karar Gecmisi
+
+### ADR-001: Tech Stack Secimi
+
+**Durum:** Accepted
+**Tarih:** ${ctx.date}
+
+#### Context
+${ctx.projectName} projesi icin teknoloji stack'i belirlenmesi gerekiyordu.
+
+#### Decision
+`;
+
+  // Add selected tech stack as the decision
+  if (ctx.selectedFrontend.length > 0) {
+    content += `- **Frontend:** ${ctx.getTechNames('frontend', ctx.selectedFrontend)}
+`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `- **Backend:** ${ctx.getTechNames('backend', ctx.selectedBackend)}
+`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `- **Database:** ${ctx.getTechNames('database', ctx.selectedDb)}
+`;
+  }
+  if (ctx.selectedCloud.length > 0) {
+    content += `- **Cloud:** ${ctx.getTechNames('cloud', ctx.selectedCloud)}
+`;
+  }
+
+  content += `
+#### Consequences
+##### Olumlu
+`;
+
+  // Framework-specific benefits
+  if (ctx.selectedFrontend.includes('nextjs')) {
+    content += `- SSR/SSG destegiyle SEO avantaji
+- Vercel ile kolay deployment
+`;
+  }
+  if (ctx.selectedFrontend.includes('react')) {
+    content += `- Genis ekosistem ve topluluk
+- Component-based architecture
+`;
+  }
+  if (ctx.selectedBackend.includes('fastapi')) {
+    content += `- Yuksek performans (async)
+- Otomatik API dokumentasyonu
+`;
+  }
+  if (ctx.selectedBackend.includes('nestjs')) {
+    content += `- Enterprise-grade architecture
+- TypeScript-first
+`;
+  }
+  if (ctx.selectedDb.includes('postgresql')) {
+    content += `- ACID uyumluluk
+- JSON destegiyle esneklik
+`;
+  }
+
+  content += `
+##### Olumsuz
+- Ogrenme egrisi (yeni takim uyeleri icin)
+- Belirli teknolojilere bagimlilik
+
+---
+
+### ADR-002: [Sonraki Karar]
+
+**Durum:** Proposed
+**Tarih:** -
+
+_Yeni kararlar icin bu template'i kullanin._`;
+
+  return content;
 }
 
 // ============ MAIN GENERATOR FUNCTIONS ============
@@ -542,6 +1079,9 @@ export function generateTemplateFiles(config: GeneratorConfig): TemplateFile[] {
     if (isIncluded('EXAMPLES.md')) files.push({ name: 'EXAMPLES.md', content: generateExamplesTemplate(ctx) });
     if (isIncluded('CODEBASE_MAP.md')) files.push({ name: 'CODEBASE_MAP.md', content: generateCodebaseMapTemplate(ctx) });
     if (isIncluded('DEBUGGING.md')) files.push({ name: 'DEBUGGING.md', content: generateDebuggingTemplate(ctx) });
+    if (isIncluded('CONTRIBUTING.md')) files.push({ name: 'CONTRIBUTING.md', content: generateContributingTemplate(ctx) });
+    if (isIncluded('SETUP_GUIDE.md')) files.push({ name: 'SETUP_GUIDE.md', content: generateSetupGuideTemplate(ctx) });
+    if (isIncluded('ADR.md')) files.push({ name: 'ADR.md', content: generateADRTemplate(ctx) });
   }
 
   return files;
@@ -666,6 +1206,38 @@ ${escapeForCodeBlock(generateExamplesTemplate(ctx))}
 
 \`\`\`markdown
 ${escapeForCodeBlock(generateCodebaseMapTemplate(ctx))}
+\`\`\`
+
+---
+
+## Template 9: DEBUGGING.md
+
+\`\`\`markdown
+${escapeForCodeBlock(generateDebuggingTemplate(ctx))}
+\`\`\`
+
+---
+
+## Template 10: CONTRIBUTING.md
+
+\`\`\`markdown
+${escapeForCodeBlock(generateContributingTemplate(ctx))}
+\`\`\`
+
+---
+
+## Template 11: SETUP_GUIDE.md
+
+\`\`\`markdown
+${escapeForCodeBlock(generateSetupGuideTemplate(ctx))}
+\`\`\`
+
+---
+
+## Template 12: ADR.md
+
+\`\`\`markdown
+${escapeForCodeBlock(generateADRTemplate(ctx))}
 \`\`\`
 
 `;
