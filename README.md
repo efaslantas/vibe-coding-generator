@@ -13,7 +13,8 @@ Vibe Coding Generator helps you create comprehensive rulesets and templates for 
 
 ## Screenshot
 
-![Vibe Coding Generator Screenshot](docs/screenshot.png)
+<img width="882" height="896" alt="image" src="https://github.com/user-attachments/assets/08c05abe-c5ff-450f-9ade-b725f11f611f" />
+
 
 <!-- TODO: Add actual screenshot to docs/screenshot.png -->
 
