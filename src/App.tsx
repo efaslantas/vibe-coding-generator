@@ -771,7 +771,7 @@ function App() {
             </div>
 
             {/* Claude Template Tiers - Only shown when Claude is selected */}
-            {selectedAITools.includes('claude') && (
+            {selectedAITools.length > 0 && (
               <>
                 <div className="ai-tools-section">
                   <h3>{t.tierSelection}</h3>
