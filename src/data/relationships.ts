@@ -15,14 +15,25 @@ export const techRelationships: Record<string, TechRelationship> = {
   // Frontend Frameworks → Languages
   'react': {
     requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [{ category: 'backend', techs: ['nodejs'] }],
+  },
+  'nextjs': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
     recommends: [
-      { category: 'backend', techs: ['nodejs'] },
-      { category: 'container', techs: ['docker'] },
+      { category: 'database', techs: ['prisma', 'supabase'] },
+      { category: 'cloud', techs: ['vercel'] },
     ],
   },
   'vue': {
     requires: [{ category: 'languages', techs: ['js-ts'] }],
     recommends: [{ category: 'backend', techs: ['nodejs'] }],
+  },
+  'nuxt': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'database', techs: ['supabase'] },
+      { category: 'cloud', techs: ['netlify', 'vercel'] },
+    ],
   },
   'angular': {
     requires: [{ category: 'languages', techs: ['js-ts'] }],
@@ -32,35 +43,55 @@ export const techRelationships: Record<string, TechRelationship> = {
     requires: [{ category: 'languages', techs: ['js-ts'] }],
     recommends: [{ category: 'backend', techs: ['nodejs'] }],
   },
+  'remix': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'database', techs: ['prisma', 'postgresql'] },
+      { category: 'cloud', techs: ['vercel', 'fly'] },
+    ],
+  },
+  'astro': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'cloud', techs: ['vercel', 'netlify', 'cloudflare'] },
+    ],
+  },
 
   // Backend Frameworks → Languages
   'nodejs': {
     requires: [{ category: 'languages', techs: ['js-ts'] }],
     recommends: [
       { category: 'database', techs: ['postgresql', 'mongodb'] },
-      { category: 'container', techs: ['docker'] },
+    ],
+  },
+  'nestjs': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'database', techs: ['postgresql', 'prisma'] },
     ],
   },
   'django': {
     requires: [{ category: 'languages', techs: ['python'] }],
     recommends: [
       { category: 'database', techs: ['postgresql'] },
-      { category: 'messagequeue', techs: ['rabbitmq'] },
     ],
   },
   'fastapi': {
     requires: [{ category: 'languages', techs: ['python'] }],
     recommends: [
-      { category: 'database', techs: ['postgresql', 'redis'] },
-      { category: 'container', techs: ['docker'] },
+      { category: 'database', techs: ['postgresql'] },
+    ],
+  },
+  'flask': {
+    requires: [{ category: 'languages', techs: ['python'] }],
+    recommends: [
+      { category: 'database', techs: ['postgresql', 'sqlite'] },
     ],
   },
   'spring': {
     requires: [{ category: 'languages', techs: ['java'] }],
     recommends: [
       { category: 'database', techs: ['postgresql', 'mysql'] },
-      { category: 'messagequeue', techs: ['kafka', 'rabbitmq'] },
-      { category: 'container', techs: ['docker', 'kubernetes'] },
     ],
   },
   'aspnet': {
@@ -68,14 +99,24 @@ export const techRelationships: Record<string, TechRelationship> = {
     recommends: [
       { category: 'database', techs: ['mssql', 'postgresql'] },
       { category: 'cloud', techs: ['azure'] },
-      { category: 'messagequeue', techs: ['rabbitmq'] },
     ],
   },
   'gin': {
     requires: [{ category: 'languages', techs: ['go'] }],
     recommends: [
-      { category: 'database', techs: ['postgresql', 'redis'] },
-      { category: 'container', techs: ['docker', 'kubernetes'] },
+      { category: 'database', techs: ['postgresql'] },
+    ],
+  },
+  'laravel': {
+    requires: [{ category: 'languages', techs: ['php'] }],
+    recommends: [
+      { category: 'database', techs: ['mysql', 'postgresql'] },
+    ],
+  },
+  'rails': {
+    requires: [{ category: 'languages', techs: ['ruby'] }],
+    recommends: [
+      { category: 'database', techs: ['postgresql'] },
     ],
   },
 
@@ -115,6 +156,30 @@ export const techRelationships: Record<string, TechRelationship> = {
     recommends: [
       { category: 'database', techs: ['redis'] },
       { category: 'languages', techs: ['js-ts'] },
+    ],
+  },
+  'supabase': {
+    recommends: [
+      { category: 'languages', techs: ['js-ts'] },
+      { category: 'frontend', techs: ['react', 'nextjs', 'vue', 'nuxt'] },
+    ],
+  },
+  'firebase': {
+    recommends: [
+      { category: 'languages', techs: ['js-ts'] },
+      { category: 'frontend', techs: ['react', 'vue'] },
+    ],
+  },
+  'prisma': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'database', techs: ['postgresql'] },
+    ],
+  },
+  'drizzle': {
+    requires: [{ category: 'languages', techs: ['js-ts'] }],
+    recommends: [
+      { category: 'database', techs: ['postgresql', 'sqlite'] },
     ],
   },
 
