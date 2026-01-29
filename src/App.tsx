@@ -424,6 +424,7 @@ function App() {
   const canProceed = (): boolean => {
     if (currentStep === 'preset') return selectedPreset !== null;
     if (currentStep === 'stack') return getSelectionCount() > 0 && !validationIssues.some(i => i.type === 'error');
+    if (currentStep === 'tiers') return selectedAITools.length > 0;
     return true;
   };
 
@@ -736,93 +737,99 @@ function App() {
         {currentStep === 'tiers' && (
           <div className="step-content">
             <div className="step-header">
-              <h2>{t.tierSelection}</h2>
-              <p>{t.tierSelectionDesc}</p>
-            </div>
-
-            <div className="tiers-list">
-              {tiers.map(tier => (
-                <div key={tier.id} className={`tier-card-large ${selectedTiers.includes(tier.id) ? 'selected' : ''} ${tier.required ? 'required' : ''}`}>
-                  <label className="tier-label">
-                    <input
-                      type="checkbox"
-                      checked={selectedTiers.includes(tier.id)}
-                      onChange={() => handleTierToggle(tier.id)}
-                      disabled={tier.required}
-                    />
-                    <div className="tier-main">
-                      <div className="tier-header">
-                        <h3>{tier.name}</h3>
-                        {tier.required && <span className="required-badge">{t.required}</span>}
-                      </div>
-                      <p className="tier-description">{tier.description}</p>
-                    </div>
-                  </label>
-                  <div className="tier-templates">
-                    <h4>{tier.templates.filter(tmpl => !excludedTemplates.includes(tmpl)).length}/{tier.templates.length} {t.templates}:</h4>
-                    <div className="template-checkbox-list">
-                      {tier.templates.map(tmpl => (
-                        <label
-                          key={tmpl}
-                          className={`template-checkbox ${excludedTemplates.includes(tmpl) ? 'excluded' : ''}`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={!excludedTemplates.includes(tmpl)}
-                            onChange={() => handleTemplateToggle(tmpl)}
-                            disabled={!selectedTiers.includes(tier.id)}
-                          />
-                          <span>{tmpl}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <h2>{t.aiToolSelection}</h2>
+              <p>{t.aiToolSelectionDesc}</p>
             </div>
 
             {/* AI Tools Section */}
-            <div className="ai-tools-section">
-              <h3>{t.aiToolSelection}</h3>
-              <p>{t.aiToolSelectionDesc}</p>
-              <div className="ai-tools-grid">
-                {aiTools.map(tool => {
-                  const isSelected = selectedAITools.includes(tool.id);
-                  return (
-                    <label
-                      key={tool.id}
-                      className={`ai-tool-card ${isSelected ? 'selected' : ''}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleAIToolToggle(tool.id)}
-                      />
-                      <div className="ai-tool-content">
-                        <div className="ai-tool-header">
-                          <span className="ai-tool-icon">{tool.icon}</span>
-                          <span className="ai-tool-name">{tool.name}</span>
-                        </div>
-                        <p className="ai-tool-desc">{tool.description[language]}</p>
-                        <span className="ai-tool-file">
-                          {t.aiToolFile}: {tool.folder ? `${tool.folder}/` : ''}{tool.fileName}
-                        </span>
+            <div className="ai-tools-grid">
+              {aiTools.map(tool => {
+                const isSelected = selectedAITools.includes(tool.id);
+                return (
+                  <label
+                    key={tool.id}
+                    className={`ai-tool-card ${isSelected ? 'selected' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleAIToolToggle(tool.id)}
+                    />
+                    <div className="ai-tool-content">
+                      <div className="ai-tool-header">
+                        <span className="ai-tool-icon">{tool.icon}</span>
+                        <span className="ai-tool-name">{tool.name}</span>
                       </div>
-                    </label>
-                  );
-                })}
-              </div>
+                      <p className="ai-tool-desc">{tool.description[language]}</p>
+                      <span className="ai-tool-file">
+                        {t.aiToolFile}: {tool.folder ? `${tool.folder}/` : ''}{tool.fileName}
+                      </span>
+                    </div>
+                  </label>
+                );
+              })}
             </div>
 
-            {/* Template Summary */}
-            <div className="template-summary">
-              <h4>{language === 'tr' ? 'Secili Template\'ler' : 'Selected Templates'}: {getSelectedTemplates().length}</h4>
-              <div className="template-list">
-                {getSelectedTemplates().map(tmpl => (
-                  <span key={tmpl} className="template-tag selected">{tmpl}</span>
-                ))}
-              </div>
-            </div>
+            {/* Claude Template Tiers - Only shown when Claude is selected */}
+            {selectedAITools.includes('claude') && (
+              <>
+                <div className="ai-tools-section">
+                  <h3>{t.tierSelection}</h3>
+                  <p>{t.tierSelectionDesc}</p>
+                </div>
+
+                <div className="tiers-list">
+                  {tiers.map(tier => (
+                    <div key={tier.id} className={`tier-card-large ${selectedTiers.includes(tier.id) ? 'selected' : ''} ${tier.required ? 'required' : ''}`}>
+                      <label className="tier-label">
+                        <input
+                          type="checkbox"
+                          checked={selectedTiers.includes(tier.id)}
+                          onChange={() => handleTierToggle(tier.id)}
+                          disabled={tier.required}
+                        />
+                        <div className="tier-main">
+                          <div className="tier-header">
+                            <h3>{tier.name}</h3>
+                            {tier.required && <span className="required-badge">{t.required}</span>}
+                          </div>
+                          <p className="tier-description">{tier.description}</p>
+                        </div>
+                      </label>
+                      <div className="tier-templates">
+                        <h4>{tier.templates.filter(tmpl => !excludedTemplates.includes(tmpl)).length}/{tier.templates.length} {t.templates}:</h4>
+                        <div className="template-checkbox-list">
+                          {tier.templates.map(tmpl => (
+                            <label
+                              key={tmpl}
+                              className={`template-checkbox ${excludedTemplates.includes(tmpl) ? 'excluded' : ''}`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={!excludedTemplates.includes(tmpl)}
+                                onChange={() => handleTemplateToggle(tmpl)}
+                                disabled={!selectedTiers.includes(tier.id)}
+                              />
+                              <span>{tmpl}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Template Summary */}
+                <div className="template-summary">
+                  <h4>{language === 'tr' ? 'Secili Template\'ler' : 'Selected Templates'}: {getSelectedTemplates().length}</h4>
+                  <div className="template-list">
+                    {getSelectedTemplates().map(tmpl => (
+                      <span key={tmpl} className="template-tag selected">{tmpl}</span>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
