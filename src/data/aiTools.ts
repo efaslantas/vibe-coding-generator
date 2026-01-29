@@ -15,7 +15,8 @@ export const aiTools: AIToolConfig[] = [
   {
     id: 'cursor',
     name: 'Cursor',
-    fileName: '.cursorrules',
+    fileName: 'CURSOR.md',
+    folder: '.cursor',
     icon: '⚡',
     description: {
       tr: 'Cursor IDE icin AI asistan kurallari',
@@ -25,7 +26,8 @@ export const aiTools: AIToolConfig[] = [
   {
     id: 'windsurf',
     name: 'Windsurf',
-    fileName: '.windsurfrules',
+    fileName: 'WINDSURF.md',
+    folder: '.windsurf',
     icon: '🏄',
     description: {
       tr: 'Windsurf IDE icin AI asistan kurallari',
@@ -35,7 +37,7 @@ export const aiTools: AIToolConfig[] = [
   {
     id: 'copilot',
     name: 'GitHub Copilot',
-    fileName: 'copilot-instructions.md',
+    fileName: 'COPILOT.md',
     folder: '.github',
     icon: '🐙',
     description: {
@@ -46,7 +48,8 @@ export const aiTools: AIToolConfig[] = [
   {
     id: 'cline',
     name: 'Cline/Roo',
-    fileName: '.clinerules',
+    fileName: 'CLINE.md',
+    folder: '.cline',
     icon: '🔮',
     description: {
       tr: 'Cline ve Roo AI asistanlari icin kurallar',
@@ -56,7 +59,8 @@ export const aiTools: AIToolConfig[] = [
   {
     id: 'aider',
     name: 'Aider',
-    fileName: 'CONVENTIONS.md',
+    fileName: 'AIDER.md',
+    folder: '.aider',
     icon: '🛠️',
     description: {
       tr: 'Aider AI pair programmer icin konvansiyonlar',

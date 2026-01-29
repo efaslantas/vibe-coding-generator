@@ -1,4 +1,4 @@
-import type { GeneratorConfig, AIToolId } from '../types';
+import type { GeneratorConfig } from '../types';
 import { categories, tiers } from '../data/techStack';
 import { aiTools } from '../data/aiTools';
 
@@ -1060,423 +1060,269 @@ _Yeni kararlar icin bu template'i kullanin._`;
 
 // ============ AI TOOL GENERATOR FUNCTIONS ============
 
-function generateCursorRules(ctx: TemplateContext): string {
-  let content = `# Cursor Rules - ${ctx.projectName}
+// Generic main template generator - works for any AI tool
+function generateMainTemplate(ctx: TemplateContext, toolName: string): string {
+  let content = `# ${ctx.projectName}
 
-## Project Overview
-- **Project:** ${ctx.projectName}
-- **Generated:** ${ctx.date}
-- **Tool:** Vibe Coding Generator
+> **Guncelleme:** ${ctx.date} | ${toolName} Rules
+> **Durum:** Development
+
+---
+
+## Hizli Referans
+
+| Komut | Aciklama |
+|-------|----------|
+`;
+
+  // Add framework-specific commands (same as Claude)
+  if (ctx.selectedFrontend.includes('nextjs')) {
+    content += `| \`npm run dev\` | Next.js dev server |
+| \`npm run build\` | Production build |
+| \`npm run start\` | Production server |
+| \`npm run lint\` | ESLint kontrolu |
+`;
+  } else if (ctx.selectedFrontend.includes('nuxt')) {
+    content += `| \`npm run dev\` | Nuxt dev server |
+| \`npm run build\` | Production build |
+| \`npm run preview\` | Preview production |
+| \`npm run lint\` | ESLint kontrolu |
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `| \`python manage.py runserver\` | Development server |
+| \`python manage.py migrate\` | Run migrations |
+| \`python manage.py test\` | Run tests |
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `| \`uvicorn main:app --reload\` | Development server |
+| \`pytest\` | Run tests |
+`;
+  } else {
+    content += `| \`npm run dev\` | Development server |
+| \`npm run build\` | Production build |
+| \`npm run test\` | Testleri calistir |
+| \`npm run lint\` | Lint kontrolu |
+`;
+  }
+
+  content += `
+---
 
 ## Tech Stack
+
+### Languages
+${ctx.selectedLangs.length > 0 ? ctx.getTechNames('languages', ctx.selectedLangs) : '-'}
+
+### Frontend
+${ctx.selectedFrontend.length > 0 ? ctx.getTechNames('frontend', ctx.selectedFrontend) : '-'}
+
+### Backend
+${ctx.selectedBackend.length > 0 ? ctx.getTechNames('backend', ctx.selectedBackend) : '-'}
+
+### Database
+${ctx.selectedDb.length > 0 ? ctx.getTechNames('database', ctx.selectedDb) : '-'}
+
+### Infrastructure
+- Cloud: ${ctx.selectedCloud.length > 0 ? ctx.getTechNames('cloud', ctx.selectedCloud) : '-'}
+- CI/CD: ${ctx.selectedCicd.length > 0 ? ctx.getTechNames('cicd', ctx.selectedCicd) : '-'}
+- Container: ${ctx.selectedContainer.length > 0 ? ctx.getTechNames('container', ctx.selectedContainer) : '-'}
+
+---
+
+## Proje Yapisi
+
+\`\`\`
 `;
 
-  if (ctx.selectedLangs.length > 0) {
-    content += `- **Languages:** ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
-  }
-  if (ctx.selectedFrontend.length > 0) {
-    content += `- **Frontend:** ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
-  }
-  if (ctx.selectedBackend.length > 0) {
-    content += `- **Backend:** ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
-  }
-  if (ctx.selectedDb.length > 0) {
-    content += `- **Database:** ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
+  // Add framework-specific project structure
+  if (ctx.selectedFrontend.includes('nextjs')) {
+    content += `${ctx.projectName}/
+├── app/              # App Router pages
+│   ├── layout.tsx    # Root layout
+│   ├── page.tsx      # Home page
+│   └── api/          # API routes
+├── components/       # React components
+├── lib/              # Utilities
+├── public/           # Static files
+└── next.config.js
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `${ctx.projectName}/
+├── ${ctx.projectName.toLowerCase()}/
+│   ├── settings.py   # Configuration
+│   ├── urls.py       # URL routing
+│   └── wsgi.py       # WSGI entry
+├── apps/             # Django apps
+├── templates/        # HTML templates
+├── static/           # Static files
+└── manage.py
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `${ctx.projectName}/
+├── app/
+│   ├── main.py       # Entry point
+│   ├── routers/      # API routes
+│   ├── models/       # Pydantic models
+│   ├── services/     # Business logic
+│   └── db/           # Database
+├── tests/
+└── requirements.txt
+`;
+  } else {
+    content += `${ctx.projectName}/
+├── src/
+│   ├── components/
+│   ├── services/
+│   ├── utils/
+│   └── index.ts
+├── tests/
+├── docs/
+└── package.json
+`;
   }
 
-  content += `
-## Code Style
+  content += `\`\`\`
 
-### General Rules
-- Write clean, maintainable code
-- Follow existing patterns in the codebase
-- Add comments only when logic is not self-evident
-- Prefer explicit over implicit
+---
 
-### Naming Conventions
+## Kurallar
+
+### CRITICAL (Ihlal = Reject)
+- [ ] Hardcoded secret YASAK
 `;
 
   if (ctx.selectedLangs.includes('js-ts')) {
-    content += `- Variables/Functions: camelCase
-- Classes/Interfaces/Types: PascalCase
-- Constants: UPPER_SNAKE_CASE
-- Files: kebab-case.ts or PascalCase.tsx for components
+    content += `- [ ] TypeScript strict mode ACIK
 `;
   } else if (ctx.selectedLangs.includes('python')) {
-    content += `- Variables/Functions: snake_case
-- Classes: PascalCase
-- Constants: UPPER_SNAKE_CASE
-- Files: snake_case.py
-`;
-  } else if (ctx.selectedLangs.includes('go')) {
-    content += `- Variables/Functions: camelCase (unexported), PascalCase (exported)
-- Packages: lowercase, single word
-- Files: snake_case.go
+    content += `- [ ] Type hints kullan (mypy uyumlu)
 `;
   }
 
-  content += `
-## Security Rules
-- Never hardcode secrets or API keys
-- Use environment variables for sensitive data
-- Validate all user inputs
-- Prevent SQL injection with parameterized queries
-- Sanitize outputs to prevent XSS
+  content += `- [ ] Her PR review ZORUNLU
 
-## Best Practices
-- Keep functions small and focused (max 50 lines)
-- Keep files manageable (max 300 lines)
-- Write tests for new functionality
-- Use meaningful commit messages
-- Document public APIs
-`;
+### IMPORTANT (Ihlal = Warning)
+- [ ] Her fonksiyon test edilmeli
+- [ ] Commit conventional format
+- [ ] PR 400 satir limit
+
+### GUIDELINE (Onerilen)
+- [ ] Fonksiyon max 50 satir
+- [ ] Dosya max 300 satir
+- [ ] Aciklayici degisken isimleri`;
 
   return content;
 }
 
-function generateWindsurfRules(ctx: TemplateContext): string {
-  let content = `# Windsurf Rules - ${ctx.projectName}
-
-## Project Context
-Project: ${ctx.projectName}
-Generated: ${ctx.date}
-
-## Technology Stack
-`;
-
-  if (ctx.selectedLangs.length > 0) {
-    content += `Languages: ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
-  }
-  if (ctx.selectedFrontend.length > 0) {
-    content += `Frontend: ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
-  }
-  if (ctx.selectedBackend.length > 0) {
-    content += `Backend: ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
-  }
-  if (ctx.selectedDb.length > 0) {
-    content += `Database: ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
-  }
-
-  content += `
-## Development Guidelines
-
-### Code Quality
-- Follow established patterns in the codebase
-- Keep code DRY (Don't Repeat Yourself)
-- Use descriptive variable and function names
-- Write self-documenting code
-
-### Architecture
-- Separate concerns appropriately
-- Use dependency injection where applicable
-- Prefer composition over inheritance
-- Keep components/modules loosely coupled
-
-### Testing
-- Write unit tests for business logic
-- Write integration tests for API endpoints
-- Aim for meaningful test coverage
-- Test edge cases and error conditions
-
-### Security
-- Never commit secrets to version control
-- Use environment variables for configuration
-- Validate and sanitize all inputs
-- Follow OWASP security guidelines
-
-## Commit Convention
-Format: <type>(<scope>): <description>
-
-Types:
-- feat: New feature
-- fix: Bug fix
-- docs: Documentation
-- style: Formatting
-- refactor: Code refactoring
-- test: Adding tests
-- chore: Maintenance
-`;
-
-  return content;
-}
-
-function generateCopilotInstructions(ctx: TemplateContext): string {
-  let content = `# GitHub Copilot Instructions - ${ctx.projectName}
-
-## Project Overview
-
-This project uses the following technology stack:
-
-`;
-
-  if (ctx.selectedLangs.length > 0) {
-    content += `### Programming Languages\n${ctx.getTechNames('languages', ctx.selectedLangs)}\n\n`;
-  }
-  if (ctx.selectedFrontend.length > 0) {
-    content += `### Frontend Framework\n${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n\n`;
-  }
-  if (ctx.selectedBackend.length > 0) {
-    content += `### Backend Framework\n${ctx.getTechNames('backend', ctx.selectedBackend)}\n\n`;
-  }
-  if (ctx.selectedDb.length > 0) {
-    content += `### Database\n${ctx.getTechNames('database', ctx.selectedDb)}\n\n`;
-  }
-
-  content += `## Coding Standards
-
-### General Guidelines
-- Write clean, readable, and maintainable code
-- Follow the existing code style and patterns
-- Use meaningful and descriptive names for variables, functions, and classes
-- Keep functions focused and concise
-- Add comments only when the code is not self-explanatory
-
-### Code Organization
-- Group related functionality together
-- Keep files focused on a single responsibility
-- Use appropriate abstractions
-- Avoid deep nesting
-
-### Error Handling
-- Handle errors gracefully
-- Provide meaningful error messages
-- Log errors appropriately
-- Don't swallow exceptions silently
-
-### Security
-- Never hardcode sensitive information
-- Use environment variables for secrets
-- Validate all user inputs
-- Follow security best practices for the tech stack
-
-## Testing
-- Write tests for new functionality
-- Maintain existing test coverage
-- Test edge cases and error conditions
-
-## Documentation
-- Keep documentation up to date
-- Document public APIs
-- Include examples where helpful
-`;
-
-  return content;
-}
-
-function generateClineRules(ctx: TemplateContext): string {
-  let content = `# Cline Rules - ${ctx.projectName}
-
-## Project Info
-- Name: ${ctx.projectName}
-- Date: ${ctx.date}
-
-## Stack
-`;
-
-  if (ctx.selectedLangs.length > 0) {
-    content += `- Languages: ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
-  }
-  if (ctx.selectedFrontend.length > 0) {
-    content += `- Frontend: ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
-  }
-  if (ctx.selectedBackend.length > 0) {
-    content += `- Backend: ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
-  }
-  if (ctx.selectedDb.length > 0) {
-    content += `- Database: ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
-  }
-
-  content += `
-## Rules
-
-### Critical (Must Follow)
-- No hardcoded secrets
-- Input validation required
-- SQL injection prevention
-- XSS prevention
-
-### Important
-- Follow existing code patterns
-- Write tests for new code
-- Keep functions under 50 lines
-- Keep files under 300 lines
-`;
-
-  if (ctx.selectedLangs.includes('js-ts')) {
-    content += `- Use TypeScript strict mode
-- Use ESLint and Prettier
-`;
-  } else if (ctx.selectedLangs.includes('python')) {
-    content += `- Use type hints
-- Follow PEP 8
-`;
-  }
-
-  content += `
-### Naming
-`;
-
-  if (ctx.selectedLangs.includes('js-ts')) {
-    content += `- camelCase: variables, functions
-- PascalCase: classes, interfaces, components
-- UPPER_SNAKE_CASE: constants
-`;
-  } else if (ctx.selectedLangs.includes('python')) {
-    content += `- snake_case: variables, functions
-- PascalCase: classes
-- UPPER_SNAKE_CASE: constants
-`;
-  } else if (ctx.selectedLangs.includes('go')) {
-    content += `- camelCase: unexported
-- PascalCase: exported
-`;
-  }
-
-  content += `
-### Commits
-- Use conventional commits
-- Format: type(scope): description
-- Types: feat, fix, docs, style, refactor, test, chore
-`;
-
-  return content;
-}
-
-function generateAiderConventions(ctx: TemplateContext): string {
-  let content = `# CONVENTIONS - ${ctx.projectName}
-
-## Project Details
-- **Name:** ${ctx.projectName}
-- **Generated:** ${ctx.date}
-- **Generator:** Vibe Coding Generator
-
-## Technology Stack
-
-`;
-
-  if (ctx.selectedLangs.length > 0) {
-    content += `**Languages:** ${ctx.getTechNames('languages', ctx.selectedLangs)}\n\n`;
-  }
-  if (ctx.selectedFrontend.length > 0) {
-    content += `**Frontend:** ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n\n`;
-  }
-  if (ctx.selectedBackend.length > 0) {
-    content += `**Backend:** ${ctx.getTechNames('backend', ctx.selectedBackend)}\n\n`;
-  }
-  if (ctx.selectedDb.length > 0) {
-    content += `**Database:** ${ctx.getTechNames('database', ctx.selectedDb)}\n\n`;
-  }
-
-  content += `## Code Conventions
-
-### Style Guide
-`;
-
-  if (ctx.selectedLangs.includes('js-ts')) {
-    content += `- Use TypeScript with strict mode enabled
-- Use ESLint and Prettier for formatting
-- Use camelCase for variables and functions
-- Use PascalCase for classes, interfaces, and React components
-- Use UPPER_SNAKE_CASE for constants
-`;
-  } else if (ctx.selectedLangs.includes('python')) {
-    content += `- Follow PEP 8 style guide
-- Use type hints for function parameters and return values
-- Use Black for code formatting
-- Use snake_case for variables and functions
-- Use PascalCase for classes
-`;
-  } else if (ctx.selectedLangs.includes('go')) {
-    content += `- Follow Effective Go guidelines
-- Use gofmt for formatting
-- Use camelCase for unexported identifiers
-- Use PascalCase for exported identifiers
-`;
-  } else if (ctx.selectedLangs.includes('php')) {
-    content += `- Follow PSR-12 coding style
-- Use camelCase for methods
-- Use PascalCase for classes
-`;
-  }
-
-  content += `
-### File Organization
-- One primary export per file when possible
-- Group related functionality in directories
-- Keep files focused and under 300 lines
-- Keep functions under 50 lines
-
-### Security Requirements
-- Never hardcode secrets or credentials
-- Use environment variables for sensitive configuration
-- Validate all user input before processing
-- Use parameterized queries for database operations
-- Sanitize output to prevent XSS attacks
-
-### Testing Conventions
-- Write tests for all new functionality
-- Place tests in a tests/ or __tests__/ directory
-- Name test files with .test or _test suffix
-- Test both happy path and error conditions
-
-### Git Conventions
-- Use conventional commits format
-- Keep commits focused and atomic
-- Write clear, descriptive commit messages
-- Format: <type>(<scope>): <description>
-
-### Documentation
-- Document complex business logic
-- Keep README up to date
-- Document public APIs
-- Use JSDoc/docstrings for complex functions
-`;
-
-  return content;
-}
+// Tool name mappings for template generation
+const toolDisplayNames: Record<string, string> = {
+  cursor: 'Cursor',
+  windsurf: 'Windsurf',
+  copilot: 'GitHub Copilot',
+  cline: 'Cline',
+  aider: 'Aider',
+};
 
 export interface AIToolFile {
   fileName: string;
-  folder?: string;
+  folder: string;
   content: string;
 }
 
 export function generateAIToolFiles(config: GeneratorConfig): AIToolFile[] {
   const ctx = createTemplateContext(config);
   const selectedTools = config.selectedAITools || ['claude'];
+  const selectedTiers = config.selectedTiers || [1];
   const files: AIToolFile[] = [];
 
   for (const toolId of selectedTools) {
     const tool = aiTools.find((t) => t.id === toolId);
-    if (!tool) continue;
+    if (!tool || !tool.folder) continue;
 
-    let content = '';
-    switch (toolId as AIToolId) {
-      case 'claude':
-        // Claude files are handled by generateTemplateFiles
-        continue;
-      case 'cursor':
-        content = generateCursorRules(ctx);
-        break;
-      case 'windsurf':
-        content = generateWindsurfRules(ctx);
-        break;
-      case 'copilot':
-        content = generateCopilotInstructions(ctx);
-        break;
-      case 'cline':
-        content = generateClineRules(ctx);
-        break;
-      case 'aider':
-        content = generateAiderConventions(ctx);
-        break;
-    }
+    // Claude files are handled by generateTemplateFiles
+    if (toolId === 'claude') continue;
 
-    if (content) {
+    const toolName = toolDisplayNames[toolId] || tool.name;
+    const folder = tool.folder;
+
+    // Generate main template (like CLAUDE.md but for each tool)
+    files.push({
+      fileName: tool.fileName,
+      folder,
+      content: generateMainTemplate(ctx, toolName),
+    });
+
+    // Generate RULESETS.md
+    files.push({
+      fileName: 'RULESETS.md',
+      folder,
+      content: generateRulesetsTemplate(ctx),
+    });
+
+    // Generate VIBE_CODING.md
+    files.push({
+      fileName: 'VIBE_CODING.md',
+      folder,
+      content: generateVibeCodingTemplate(ctx),
+    });
+
+    // Generate SESSION_NOTES.md
+    files.push({
+      fileName: 'SESSION_NOTES.md',
+      folder,
+      content: generateSessionNotesTemplate(ctx),
+    });
+
+    // Generate SESSION_HANDOFF.md
+    files.push({
+      fileName: 'SESSION_HANDOFF.md',
+      folder,
+      content: generateSessionHandoffTemplate(ctx),
+    });
+
+    // Generate CODE_REVIEW.md
+    files.push({
+      fileName: 'CODE_REVIEW.md',
+      folder,
+      content: generateCodeReviewTemplate(ctx),
+    });
+
+    // Tier 2 templates
+    if (selectedTiers.includes(2)) {
       files.push({
-        fileName: tool.fileName,
-        folder: tool.folder,
-        content,
+        fileName: 'EXAMPLES.md',
+        folder,
+        content: generateExamplesTemplate(ctx),
+      });
+
+      files.push({
+        fileName: 'CODEBASE_MAP.md',
+        folder,
+        content: generateCodebaseMapTemplate(ctx),
+      });
+
+      files.push({
+        fileName: 'DEBUGGING.md',
+        folder,
+        content: generateDebuggingTemplate(ctx),
+      });
+
+      files.push({
+        fileName: 'CONTRIBUTING.md',
+        folder,
+        content: generateContributingTemplate(ctx),
+      });
+
+      files.push({
+        fileName: 'SETUP_GUIDE.md',
+        folder,
+        content: generateSetupGuideTemplate(ctx),
+      });
+
+      files.push({
+        fileName: 'ADR.md',
+        folder,
+        content: generateADRTemplate(ctx),
       });
     }
   }
