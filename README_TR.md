@@ -1,6 +1,6 @@
 # Vibe Coding Generator
 
-> AI-destekli development için özelleştirilmiş ruleset oluşturucu
+> AI destekli geliştirme için özelleştirilmiş ruleset oluşturucu
 
 > [!WARNING]
 > **BETA / ÖNİZLEME** - Bu proje aktif geliştirme aşamasındadır. Özellikler önceden haber verilmeksizin değişebilir. Geri bildirim ve katkılarınız bekliyoruz!
@@ -13,31 +13,45 @@
 
 Türkçe | [English](README.md)
 
-Vibe Coding Generator, Claude AI ve diğer LLM'lerle çalışırken projeleriniz için kapsamlı ruleset ve template'ler oluşturmanıza yardımcı olan bir araçtır.
+Vibe Coding Generator, Claude, Cursor, Windsurf, GitHub Copilot, Cline ve Aider gibi AI kodlama asistanlarıyla çalışırken projeleriniz için kapsamlı ruleset ve template'ler oluşturmanıza yardımcı olur.
 
 ## Ekran Görüntüsü
 
-![Vibe Coding Generator Screenshot](docs/screenshot.png)
+<img width="882" alt="Vibe Coding Generator Screenshot" src="https://github.com/user-attachments/assets/08c05abe-c5ff-450f-9ade-b725f11f611f" />
 
-<!-- TODO: docs/screenshot.png dosyasına gerçek ekran görüntüsü ekleyin -->
+## Özellikler
 
-## 🚀 Özellikler
-
-- **5 Adımlı Wizard**: Kolay kullanımlı adım adım yapılandırma
-- **Hazır Preset'ler**: Full-Stack, Microservices, API, Mobile ve daha fazlası
+- **6 AI Araç Desteği**: Claude, Cursor, Windsurf, GitHub Copilot, Cline, Aider
+- **5 Adımlı Wizard**: Kolay adım adım yapılandırma
+- **Hazır Preset'ler**: Next.js Starter, React + Supabase, Django API, T3 Stack ve daha fazlası
 - **Akıllı Bağımlılıklar**: Teknoloji seçimlerine göre otomatik bağımlılık yönetimi
-- **Validation**: Seçimlerinizi kontrol eden akıllı doğrulama
-- **Tech Info**: Her teknoloji için detaylı bilgi ve karşılaştırma
-- **35 Template**: Tier 1-5 arası kapsamlı template seti
-- **Export**: Markdown indirme ve clipboard kopyalama
+- **Template Tier'ları**: Tier 1 (Zorunlu) ve Tier 2 (Önerilen) template setleri
+- **Araç Bazlı Klasörler**: Her AI aracı kendi klasörünü alır (`.claude/`, `.cursor/`, `.windsurf/`, vb.)
+- **Export**: Tüm template'ler araç bazında organize edilmiş ZIP indirme
+- **Paylaşılabilir URL'ler**: Yapılandırmanızı başkalarıyla paylaşın
+- **TR/EN Desteği**: Tam Türkçe ve İngilizce dil desteği
 
-## 📦 Kurulum
+## Hızlı Başlangıç
+
+### Docker ile (Önerilen)
 
 ```bash
 # Repository'yi klonlayın
 git clone https://github.com/efaslantas/vibe-coding-generator.git
+cd vibe-coding-generator
 
-# Proje dizinine gidin
+# Production server'ı başlatın (port 9091)
+docker compose up -d
+
+# Tarayıcıda açın
+open http://localhost:9091
+```
+
+### npm ile
+
+```bash
+# Repository'yi klonlayın
+git clone https://github.com/efaslantas/vibe-coding-generator.git
 cd vibe-coding-generator
 
 # Bağımlılıkları yükleyin
@@ -47,47 +61,58 @@ npm install
 npm run dev
 ```
 
-## 🎯 Kullanım
+## Desteklenen AI Araçları
 
-1. **Proje Adı**: Projenizin adını girin
-2. **Preset Seçimi**: Hazır bir yapılandırma seçin veya "Custom" ile sıfırdan başlayın
-3. **Tech Stack**: Kullanacağınız teknolojileri seçin
-4. **Template Tier'ları**: İhtiyacınıza göre template seviyelerini seçin
-5. **Export**: Oluşturulan ruleset'i indirin veya kopyalayın
+| Araç | Klasör | Ana Dosya |
+|------|--------|-----------|
+| Claude Code | `.claude/` | `CLAUDE.md` |
+| Cursor | `.cursor/` | `CURSOR.md` |
+| Windsurf | `.windsurf/` | `WINDSURF.md` |
+| GitHub Copilot | `.github/` | `COPILOT.md` |
+| Cline/Roo | `.cline/` | `CLINE.md` |
+| Aider | `.aider/` | `AIDER.md` |
 
-## 📋 Template Tier'ları
+## Template Tier'ları
 
-| Tier | Açıklama | Template Sayısı |
-|------|----------|-----------------|
-| **Tier 1: Zorunlu** | Her projede olması gereken temel dosyalar | 6 |
-| **Tier 2: Önerilen** | Orta-büyük projeler için | 6 |
-| **Tier 3: Enterprise** | Production-ready projeler için | 8 |
-| **Tier 4: AI & Modern** | Vibe Coding özel pratikler | 10 |
-| **Tier 5: Reliability** | Production-grade güvenilirlik | 5 |
+| Tier | Açıklama | Template'ler |
+|------|----------|--------------|
+| **Tier 1: Zorunlu** | Her projede olması gereken temel dosyalar | MAIN.md, RULESETS.md, VIBE_CODING.md, SESSION_NOTES.md, SESSION_HANDOFF.md, CODE_REVIEW.md |
+| **Tier 2: Önerilen** | Orta-büyük projeler için | EXAMPLES.md, CODEBASE_MAP.md, DEBUGGING.md, CONTRIBUTING.md, SETUP_GUIDE.md, ADR.md |
 
-## 🛠️ Desteklenen Teknolojiler
+## Desteklenen Teknolojiler
 
 ### Diller
-JavaScript/TypeScript, Python, Go, Java, Kotlin, C#, Swift
+JavaScript/TypeScript, Python, Go, PHP
 
 ### Frontend
-React, Vue, Angular, Svelte
+React, Next.js, Vue, Nuxt, Angular, Svelte, Remix, Astro
 
 ### Backend
-Node.js, Django, FastAPI, Spring Boot, ASP.NET Core, Gin
+Node.js (Express/Fastify), NestJS, Django, FastAPI, Flask, Gin (Go), Laravel
 
-### Database
-PostgreSQL, MySQL, MSSQL, MongoDB, Redis, Elasticsearch
+### Veritabanı
+PostgreSQL, MySQL, MongoDB, Redis, Supabase, Firebase, Prisma (ORM), Drizzle (ORM), SQLite
 
-### Infrastructure
-Docker, Kubernetes, Terraform, GitLab CI, Jenkins, ArgoCD
+### Cloud & Hosting
+Vercel, Netlify, Cloudflare, Railway, Fly.io
 
-### Observability
-Prometheus, Grafana, Loki, Jaeger
+### CI/CD
+GitHub Actions, GitLab CI
 
-## 🤝 Katkıda Bulunma
+### Container
+Docker, Docker Compose
 
-Katkılarınızı memnuniyetle karşılıyoruz! Lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyin.
+## Kullanım
+
+1. **Proje Ayarları**: Proje adını girin ve bir preset seçin
+2. **Tech Stack**: Kullanacağınız teknolojileri seçin
+3. **Template'ler**: AI araçlarını ve template tier'larını seçin
+4. **Önizleme**: Oluşturulan ruleset'i inceleyin
+5. **Export**: ZIP indirin veya panoya kopyalayın
+
+## Katkıda Bulunma
+
+Katkılarınızı bekliyoruz!
 
 1. Fork edin
 2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
@@ -95,15 +120,9 @@ Katkılarınızı memnuniyetle karşılıyoruz! Lütfen [CONTRIBUTING.md](CONTRI
 4. Push edin (`git push origin feature/amazing-feature`)
 5. Pull Request açın
 
-## 📄 Lisans
+## Lisans
 
 Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
-
-## 🙏 Teşekkürler
-
-- [Vite](https://vitejs.dev/) - Build tool
-- [React](https://react.dev/) - UI library
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
 
 ---
 

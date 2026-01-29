@@ -13,25 +13,23 @@
 
 [Türkçe](README_TR.md) | English
 
-Vibe Coding Generator helps you create comprehensive rulesets and templates for your projects when working with Claude AI and other LLMs.
+Vibe Coding Generator helps you create comprehensive rulesets and templates for your projects when working with AI coding assistants like Claude, Cursor, Windsurf, GitHub Copilot, Cline, and Aider.
 
 ## Screenshot
 
-<img width="882" height="896" alt="image" src="https://github.com/user-attachments/assets/08c05abe-c5ff-450f-9ade-b725f11f611f" />
-
-
-<!-- TODO: Add actual screenshot to docs/screenshot.png -->
+<img width="882" alt="Vibe Coding Generator Screenshot" src="https://github.com/user-attachments/assets/08c05abe-c5ff-450f-9ade-b725f11f611f" />
 
 ## Features
 
+- **6 AI Tool Support**: Claude, Cursor, Windsurf, GitHub Copilot, Cline, Aider
 - **5-Step Wizard**: Easy step-by-step configuration
-- **Ready-to-use Presets**: Full-Stack, Microservices, API, Mobile, and more
+- **Ready-to-use Presets**: Next.js Starter, React + Supabase, Django API, T3 Stack, and more
 - **Smart Dependencies**: Automatic dependency management based on technology choices
-- **Validation**: Intelligent validation checking your selections
-- **Tech Info**: Detailed information and comparison for each technology
-- **35 Templates**: Comprehensive template set from Tier 1-5
-- **Export**: Markdown download and clipboard copy
+- **Template Tiers**: Tier 1 (Essential) and Tier 2 (Recommended) template sets
+- **Per-Tool Folders**: Each AI tool gets its own folder (`.claude/`, `.cursor/`, `.windsurf/`, etc.)
+- **Export**: ZIP download with all templates organized by tool
 - **Shareable URLs**: Share your configuration with others
+- **TR/EN Support**: Full Turkish and English language support
 
 ## Quick Start
 
@@ -63,47 +61,58 @@ npm install
 npm run dev
 ```
 
-## Usage
+## Supported AI Tools
 
-1. **Project Name**: Enter your project name
-2. **Preset Selection**: Choose a ready-made configuration or start from scratch with "Custom"
-3. **Tech Stack**: Select the technologies you'll use
-4. **Template Tiers**: Choose template levels according to your needs
-5. **Export**: Download or copy the generated ruleset
+| Tool | Folder | Main File |
+|------|--------|-----------|
+| Claude Code | `.claude/` | `CLAUDE.md` |
+| Cursor | `.cursor/` | `CURSOR.md` |
+| Windsurf | `.windsurf/` | `WINDSURF.md` |
+| GitHub Copilot | `.github/` | `COPILOT.md` |
+| Cline/Roo | `.cline/` | `CLINE.md` |
+| Aider | `.aider/` | `AIDER.md` |
 
 ## Template Tiers
 
 | Tier | Description | Templates |
 |------|-------------|-----------|
-| **Tier 1: Essential** | Core files every project needs | 6 |
-| **Tier 2: Recommended** | For medium to large projects | 6 |
-| **Tier 3: Enterprise** | For production-ready projects | 8 |
-| **Tier 4: AI & Modern** | Vibe Coding specific practices | 10 |
-| **Tier 5: Reliability** | Production-grade reliability | 5 |
+| **Tier 1: Essential** | Core files every project needs | MAIN.md, RULESETS.md, VIBE_CODING.md, SESSION_NOTES.md, SESSION_HANDOFF.md, CODE_REVIEW.md |
+| **Tier 2: Recommended** | For medium to large projects | EXAMPLES.md, CODEBASE_MAP.md, DEBUGGING.md, CONTRIBUTING.md, SETUP_GUIDE.md, ADR.md |
 
 ## Supported Technologies
 
 ### Languages
-JavaScript/TypeScript, Python, Go, Java, Kotlin, C#, Swift
+JavaScript/TypeScript, Python, Go, PHP
 
 ### Frontend
-React, Vue, Angular, Svelte
+React, Next.js, Vue, Nuxt, Angular, Svelte, Remix, Astro
 
 ### Backend
-Node.js, Django, FastAPI, Spring Boot, ASP.NET Core, Gin
+Node.js (Express/Fastify), NestJS, Django, FastAPI, Flask, Gin (Go), Laravel
 
 ### Database
-PostgreSQL, MySQL, MSSQL, MongoDB, Redis, Elasticsearch
+PostgreSQL, MySQL, MongoDB, Redis, Supabase, Firebase, Prisma (ORM), Drizzle (ORM), SQLite
 
-### Infrastructure
-Docker, Kubernetes, Terraform, GitLab CI, Jenkins, ArgoCD
+### Cloud & Hosting
+Vercel, Netlify, Cloudflare, Railway, Fly.io
 
-### Observability
-Prometheus, Grafana, Loki, Jaeger
+### CI/CD
+GitHub Actions, GitLab CI
+
+### Container
+Docker, Docker Compose
+
+## Usage
+
+1. **Project Settings**: Enter your project name and select a preset
+2. **Tech Stack**: Select the technologies you'll use
+3. **Templates**: Choose AI tools and template tiers
+4. **Preview**: Review the generated ruleset
+5. **Export**: Download ZIP or copy to clipboard
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+We welcome contributions!
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -114,12 +123,6 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- [Vite](https://vitejs.dev/) - Build tool
-- [React](https://react.dev/) - UI library
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
 
 ---
 
