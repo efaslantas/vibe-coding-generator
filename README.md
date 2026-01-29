@@ -2,7 +2,11 @@
 
 > Generate customized rulesets for AI-assisted development
 
-![Vibe Coding Generator](https://img.shields.io/badge/version-2.0.0-blue.svg)
+> [!WARNING]
+> **BETA / PREVIEW** - This project is under active development. Features may change without notice. Feedback and contributions are welcome!
+
+![Vibe Coding Generator](https://img.shields.io/badge/version-2.0.0--beta-orange.svg)
+![Status](https://img.shields.io/badge/status-beta-yellow.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)
