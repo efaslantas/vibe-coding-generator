@@ -1,5 +1,6 @@
-import type { GeneratorConfig } from '../types';
+import type { GeneratorConfig, AIToolId } from '../types';
 import { categories, tiers } from '../data/techStack';
+import { aiTools } from '../data/aiTools';
 
 export interface TemplateFile {
   name: string;
@@ -1055,6 +1056,432 @@ ${ctx.projectName} projesi icin teknoloji stack'i belirlenmesi gerekiyordu.
 _Yeni kararlar icin bu template'i kullanin._`;
 
   return content;
+}
+
+// ============ AI TOOL GENERATOR FUNCTIONS ============
+
+function generateCursorRules(ctx: TemplateContext): string {
+  let content = `# Cursor Rules - ${ctx.projectName}
+
+## Project Overview
+- **Project:** ${ctx.projectName}
+- **Generated:** ${ctx.date}
+- **Tool:** Vibe Coding Generator
+
+## Tech Stack
+`;
+
+  if (ctx.selectedLangs.length > 0) {
+    content += `- **Languages:** ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
+  }
+  if (ctx.selectedFrontend.length > 0) {
+    content += `- **Frontend:** ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `- **Backend:** ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `- **Database:** ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
+  }
+
+  content += `
+## Code Style
+
+### General Rules
+- Write clean, maintainable code
+- Follow existing patterns in the codebase
+- Add comments only when logic is not self-evident
+- Prefer explicit over implicit
+
+### Naming Conventions
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- Variables/Functions: camelCase
+- Classes/Interfaces/Types: PascalCase
+- Constants: UPPER_SNAKE_CASE
+- Files: kebab-case.ts or PascalCase.tsx for components
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- Variables/Functions: snake_case
+- Classes: PascalCase
+- Constants: UPPER_SNAKE_CASE
+- Files: snake_case.py
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `- Variables/Functions: camelCase (unexported), PascalCase (exported)
+- Packages: lowercase, single word
+- Files: snake_case.go
+`;
+  }
+
+  content += `
+## Security Rules
+- Never hardcode secrets or API keys
+- Use environment variables for sensitive data
+- Validate all user inputs
+- Prevent SQL injection with parameterized queries
+- Sanitize outputs to prevent XSS
+
+## Best Practices
+- Keep functions small and focused (max 50 lines)
+- Keep files manageable (max 300 lines)
+- Write tests for new functionality
+- Use meaningful commit messages
+- Document public APIs
+`;
+
+  return content;
+}
+
+function generateWindsurfRules(ctx: TemplateContext): string {
+  let content = `# Windsurf Rules - ${ctx.projectName}
+
+## Project Context
+Project: ${ctx.projectName}
+Generated: ${ctx.date}
+
+## Technology Stack
+`;
+
+  if (ctx.selectedLangs.length > 0) {
+    content += `Languages: ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
+  }
+  if (ctx.selectedFrontend.length > 0) {
+    content += `Frontend: ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `Backend: ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `Database: ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
+  }
+
+  content += `
+## Development Guidelines
+
+### Code Quality
+- Follow established patterns in the codebase
+- Keep code DRY (Don't Repeat Yourself)
+- Use descriptive variable and function names
+- Write self-documenting code
+
+### Architecture
+- Separate concerns appropriately
+- Use dependency injection where applicable
+- Prefer composition over inheritance
+- Keep components/modules loosely coupled
+
+### Testing
+- Write unit tests for business logic
+- Write integration tests for API endpoints
+- Aim for meaningful test coverage
+- Test edge cases and error conditions
+
+### Security
+- Never commit secrets to version control
+- Use environment variables for configuration
+- Validate and sanitize all inputs
+- Follow OWASP security guidelines
+
+## Commit Convention
+Format: <type>(<scope>): <description>
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation
+- style: Formatting
+- refactor: Code refactoring
+- test: Adding tests
+- chore: Maintenance
+`;
+
+  return content;
+}
+
+function generateCopilotInstructions(ctx: TemplateContext): string {
+  let content = `# GitHub Copilot Instructions - ${ctx.projectName}
+
+## Project Overview
+
+This project uses the following technology stack:
+
+`;
+
+  if (ctx.selectedLangs.length > 0) {
+    content += `### Programming Languages\n${ctx.getTechNames('languages', ctx.selectedLangs)}\n\n`;
+  }
+  if (ctx.selectedFrontend.length > 0) {
+    content += `### Frontend Framework\n${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n\n`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `### Backend Framework\n${ctx.getTechNames('backend', ctx.selectedBackend)}\n\n`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `### Database\n${ctx.getTechNames('database', ctx.selectedDb)}\n\n`;
+  }
+
+  content += `## Coding Standards
+
+### General Guidelines
+- Write clean, readable, and maintainable code
+- Follow the existing code style and patterns
+- Use meaningful and descriptive names for variables, functions, and classes
+- Keep functions focused and concise
+- Add comments only when the code is not self-explanatory
+
+### Code Organization
+- Group related functionality together
+- Keep files focused on a single responsibility
+- Use appropriate abstractions
+- Avoid deep nesting
+
+### Error Handling
+- Handle errors gracefully
+- Provide meaningful error messages
+- Log errors appropriately
+- Don't swallow exceptions silently
+
+### Security
+- Never hardcode sensitive information
+- Use environment variables for secrets
+- Validate all user inputs
+- Follow security best practices for the tech stack
+
+## Testing
+- Write tests for new functionality
+- Maintain existing test coverage
+- Test edge cases and error conditions
+
+## Documentation
+- Keep documentation up to date
+- Document public APIs
+- Include examples where helpful
+`;
+
+  return content;
+}
+
+function generateClineRules(ctx: TemplateContext): string {
+  let content = `# Cline Rules - ${ctx.projectName}
+
+## Project Info
+- Name: ${ctx.projectName}
+- Date: ${ctx.date}
+
+## Stack
+`;
+
+  if (ctx.selectedLangs.length > 0) {
+    content += `- Languages: ${ctx.getTechNames('languages', ctx.selectedLangs)}\n`;
+  }
+  if (ctx.selectedFrontend.length > 0) {
+    content += `- Frontend: ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `- Backend: ${ctx.getTechNames('backend', ctx.selectedBackend)}\n`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `- Database: ${ctx.getTechNames('database', ctx.selectedDb)}\n`;
+  }
+
+  content += `
+## Rules
+
+### Critical (Must Follow)
+- No hardcoded secrets
+- Input validation required
+- SQL injection prevention
+- XSS prevention
+
+### Important
+- Follow existing code patterns
+- Write tests for new code
+- Keep functions under 50 lines
+- Keep files under 300 lines
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- Use TypeScript strict mode
+- Use ESLint and Prettier
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- Use type hints
+- Follow PEP 8
+`;
+  }
+
+  content += `
+### Naming
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- camelCase: variables, functions
+- PascalCase: classes, interfaces, components
+- UPPER_SNAKE_CASE: constants
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- snake_case: variables, functions
+- PascalCase: classes
+- UPPER_SNAKE_CASE: constants
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `- camelCase: unexported
+- PascalCase: exported
+`;
+  }
+
+  content += `
+### Commits
+- Use conventional commits
+- Format: type(scope): description
+- Types: feat, fix, docs, style, refactor, test, chore
+`;
+
+  return content;
+}
+
+function generateAiderConventions(ctx: TemplateContext): string {
+  let content = `# CONVENTIONS - ${ctx.projectName}
+
+## Project Details
+- **Name:** ${ctx.projectName}
+- **Generated:** ${ctx.date}
+- **Generator:** Vibe Coding Generator
+
+## Technology Stack
+
+`;
+
+  if (ctx.selectedLangs.length > 0) {
+    content += `**Languages:** ${ctx.getTechNames('languages', ctx.selectedLangs)}\n\n`;
+  }
+  if (ctx.selectedFrontend.length > 0) {
+    content += `**Frontend:** ${ctx.getTechNames('frontend', ctx.selectedFrontend)}\n\n`;
+  }
+  if (ctx.selectedBackend.length > 0) {
+    content += `**Backend:** ${ctx.getTechNames('backend', ctx.selectedBackend)}\n\n`;
+  }
+  if (ctx.selectedDb.length > 0) {
+    content += `**Database:** ${ctx.getTechNames('database', ctx.selectedDb)}\n\n`;
+  }
+
+  content += `## Code Conventions
+
+### Style Guide
+`;
+
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- Use TypeScript with strict mode enabled
+- Use ESLint and Prettier for formatting
+- Use camelCase for variables and functions
+- Use PascalCase for classes, interfaces, and React components
+- Use UPPER_SNAKE_CASE for constants
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- Follow PEP 8 style guide
+- Use type hints for function parameters and return values
+- Use Black for code formatting
+- Use snake_case for variables and functions
+- Use PascalCase for classes
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `- Follow Effective Go guidelines
+- Use gofmt for formatting
+- Use camelCase for unexported identifiers
+- Use PascalCase for exported identifiers
+`;
+  } else if (ctx.selectedLangs.includes('php')) {
+    content += `- Follow PSR-12 coding style
+- Use camelCase for methods
+- Use PascalCase for classes
+`;
+  }
+
+  content += `
+### File Organization
+- One primary export per file when possible
+- Group related functionality in directories
+- Keep files focused and under 300 lines
+- Keep functions under 50 lines
+
+### Security Requirements
+- Never hardcode secrets or credentials
+- Use environment variables for sensitive configuration
+- Validate all user input before processing
+- Use parameterized queries for database operations
+- Sanitize output to prevent XSS attacks
+
+### Testing Conventions
+- Write tests for all new functionality
+- Place tests in a tests/ or __tests__/ directory
+- Name test files with .test or _test suffix
+- Test both happy path and error conditions
+
+### Git Conventions
+- Use conventional commits format
+- Keep commits focused and atomic
+- Write clear, descriptive commit messages
+- Format: <type>(<scope>): <description>
+
+### Documentation
+- Document complex business logic
+- Keep README up to date
+- Document public APIs
+- Use JSDoc/docstrings for complex functions
+`;
+
+  return content;
+}
+
+export interface AIToolFile {
+  fileName: string;
+  folder?: string;
+  content: string;
+}
+
+export function generateAIToolFiles(config: GeneratorConfig): AIToolFile[] {
+  const ctx = createTemplateContext(config);
+  const selectedTools = config.selectedAITools || ['claude'];
+  const files: AIToolFile[] = [];
+
+  for (const toolId of selectedTools) {
+    const tool = aiTools.find((t) => t.id === toolId);
+    if (!tool) continue;
+
+    let content = '';
+    switch (toolId as AIToolId) {
+      case 'claude':
+        // Claude files are handled by generateTemplateFiles
+        continue;
+      case 'cursor':
+        content = generateCursorRules(ctx);
+        break;
+      case 'windsurf':
+        content = generateWindsurfRules(ctx);
+        break;
+      case 'copilot':
+        content = generateCopilotInstructions(ctx);
+        break;
+      case 'cline':
+        content = generateClineRules(ctx);
+        break;
+      case 'aider':
+        content = generateAiderConventions(ctx);
+        break;
+    }
+
+    if (content) {
+      files.push({
+        fileName: tool.fileName,
+        folder: tool.folder,
+        content,
+      });
+    }
+  }
+
+  return files;
 }
 
 // ============ MAIN GENERATOR FUNCTIONS ============

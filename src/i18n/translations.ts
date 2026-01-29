@@ -44,6 +44,11 @@ export interface Translations {
   required: string;
   templates: string;
 
+  // AI Tools
+  aiToolSelection: string;
+  aiToolSelectionDesc: string;
+  aiToolFile: string;
+
   // Review step
   preview: string;
   previewDesc: string;
@@ -134,6 +139,11 @@ export const translations: Record<Language, Translations> = {
     required: 'Zorunlu',
     templates: 'Template',
 
+    // AI Tools
+    aiToolSelection: 'AI Arac Secimi',
+    aiToolSelectionDesc: 'Kullandiginiz AI kodlama araclarini secin. Her arac icin uygun kural dosyasi olusturulacak.',
+    aiToolFile: 'Dosya',
+
     // Review step
     preview: 'Onizleme',
     previewDesc: 'Olusturulan ruleset\'i inceleyin.',
@@ -221,6 +231,11 @@ export const translations: Record<Language, Translations> = {
     tierSelectionDesc: 'Select template tiers based on your project size.',
     required: 'Required',
     templates: 'Templates',
+
+    // AI Tools
+    aiToolSelection: 'AI Tool Selection',
+    aiToolSelectionDesc: 'Select the AI coding tools you use. A suitable rules file will be generated for each tool.',
+    aiToolFile: 'File',
 
     // Review step
     preview: 'Preview',

@@ -20,6 +20,8 @@ const validators: Record<string, Validator<unknown>> = {
     Array.isArray(v) && v.every((item) => typeof item === 'number' && item >= 1 && item <= 5),
   'vibe-coding-last-preset': (v): v is string | null =>
     v === null || (typeof v === 'string' && v.length <= 50),
+  'vibe-coding-ai-tools': (v): v is string[] =>
+    Array.isArray(v) && v.every((item) => typeof item === 'string' && item.length <= 20),
 };
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
@@ -71,4 +73,5 @@ export const STORAGE_KEYS = {
   SELECTED_TECHNOLOGIES: 'vibe-coding-technologies',
   SELECTED_TIERS: 'vibe-coding-tiers',
   LAST_PRESET: 'vibe-coding-last-preset',
+  SELECTED_AI_TOOLS: 'vibe-coding-ai-tools',
 } as const;

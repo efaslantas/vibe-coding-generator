@@ -29,7 +29,8 @@ import { categories, tiers } from './data/techStack';
 import { presets } from './data/presets';
 import { getTechInfo } from './data/techInfo';
 import { getPresetInfo } from './data/presetInfo';
-import { generateRuleset, generateTemplateFiles } from './generator';
+import { generateRuleset, generateTemplateFiles, generateAIToolFiles } from './generator';
+import { aiTools } from './data/aiTools';
 import { autoSelectRequired, getAllRecommendations, getRequiredTechs } from './data/relationships';
 import { translations, type Language } from './i18n/translations';
 import { useLocalStorage, STORAGE_KEYS } from './hooks/useLocalStorage';
@@ -46,6 +47,7 @@ function App() {
   const [savedTechnologies, setSavedTechnologies] = useLocalStorage<Record<string, string[]>>(STORAGE_KEYS.SELECTED_TECHNOLOGIES, {});
   const [savedTiers, setSavedTiers] = useLocalStorage<number[]>(STORAGE_KEYS.SELECTED_TIERS, [1]);
   const [savedPresetId, setSavedPresetId] = useLocalStorage<string | null>(STORAGE_KEYS.LAST_PRESET, null);
+  const [savedAITools, setSavedAITools] = useLocalStorage<string[]>(STORAGE_KEYS.SELECTED_AI_TOOLS, ['claude']);
 
   const t = translations[language];
 
@@ -73,6 +75,7 @@ function App() {
   const [previewMode, setPreviewMode] = useState<'raw' | 'rendered'>('rendered');
   const [excludedTemplates, setExcludedTemplates] = useState<string[]>([]);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [selectedAITools, setSelectedAITools] = useState<string[]>(() => savedAITools);
 
   // Generate shareable URL
   const generateShareUrl = useCallback((): string => {
@@ -130,18 +133,25 @@ function App() {
     setSavedTiers(tiers);
   }, [setSavedTiers]);
 
+  const handleAIToolsChange = useCallback((tools: string[]) => {
+    setSelectedAITools(tools);
+    setSavedAITools(tools);
+  }, [setSavedAITools]);
+
   const handleClearConfig = () => {
     // Clear all localStorage
     localStorage.removeItem(STORAGE_KEYS.PROJECT_NAME);
     localStorage.removeItem(STORAGE_KEYS.SELECTED_TECHNOLOGIES);
     localStorage.removeItem(STORAGE_KEYS.SELECTED_TIERS);
     localStorage.removeItem(STORAGE_KEYS.LAST_PRESET);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_AI_TOOLS);
     // Reset state
     setProjectName('MyProject');
     setSelectedPreset(null);
     setSelectedTechnologies({});
     setSelectedTiers([1]);
     setExcludedTemplates([]);
+    setSelectedAITools(['claude']);
     setCurrentStep('preset');
   };
 
@@ -306,6 +316,13 @@ function App() {
     );
   };
 
+  const handleAIToolToggle = (toolId: string) => {
+    const newTools = selectedAITools.includes(toolId)
+      ? selectedAITools.filter(t => t !== toolId)
+      : [...selectedAITools, toolId];
+    handleAIToolsChange(newTools);
+  };
+
   const getSelectedTemplates = (): string[] => {
     return tiers
       .filter(tier => selectedTiers.includes(tier.id))
@@ -314,7 +331,7 @@ function App() {
   };
 
   const handleGenerate = () => {
-    const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates };
+    const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates, selectedAITools };
     const content = generateRuleset(config);
     setGeneratedContent(content);
   };
@@ -331,15 +348,28 @@ function App() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } else if (format === 'zip') {
-      const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates };
+      const config: GeneratorConfig = { projectName, selectedTechnologies, selectedTiers, excludedTemplates, selectedAITools };
       const templateFiles = generateTemplateFiles(config);
+      const aiToolFiles = generateAIToolFiles(config);
 
       const zip = new JSZip();
-      const folder = zip.folder('.claude');
 
-      // Add each template file to the .claude folder
-      templateFiles.forEach(file => {
-        folder?.file(file.name, file.content);
+      // Add .claude folder with template files (only if claude is selected)
+      if (selectedAITools.includes('claude')) {
+        const claudeFolder = zip.folder('.claude');
+        templateFiles.forEach(file => {
+          claudeFolder?.file(file.name, file.content);
+        });
+      }
+
+      // Add AI tool files
+      aiToolFiles.forEach(file => {
+        if (file.folder) {
+          const folder = zip.folder(file.folder);
+          folder?.file(file.fileName, file.content);
+        } else {
+          zip.file(file.fileName, file.content);
+        }
       });
 
       // Also add a combined ruleset at root
@@ -749,6 +779,39 @@ function App() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* AI Tools Section */}
+            <div className="ai-tools-section">
+              <h3>{t.aiToolSelection}</h3>
+              <p>{t.aiToolSelectionDesc}</p>
+              <div className="ai-tools-grid">
+                {aiTools.map(tool => {
+                  const isSelected = selectedAITools.includes(tool.id);
+                  return (
+                    <label
+                      key={tool.id}
+                      className={`ai-tool-card ${isSelected ? 'selected' : ''}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleAIToolToggle(tool.id)}
+                      />
+                      <div className="ai-tool-content">
+                        <div className="ai-tool-header">
+                          <span className="ai-tool-icon">{tool.icon}</span>
+                          <span className="ai-tool-name">{tool.name}</span>
+                        </div>
+                        <p className="ai-tool-desc">{tool.description[language]}</p>
+                        <span className="ai-tool-file">
+                          {t.aiToolFile}: {tool.folder ? `${tool.folder}/` : ''}{tool.fileName}
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Template Summary */}

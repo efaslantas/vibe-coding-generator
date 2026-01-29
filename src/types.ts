@@ -25,4 +25,19 @@ export interface GeneratorConfig {
   selectedTechnologies: Record<string, string[]>;
   selectedTiers: number[];
   excludedTemplates?: string[];
+  selectedAITools?: string[];
+}
+
+export type AIToolId = 'claude' | 'cursor' | 'windsurf' | 'copilot' | 'cline' | 'aider';
+
+export interface AIToolConfig {
+  id: AIToolId;
+  name: string;
+  fileName: string;
+  folder?: string;
+  icon: string;
+  description: {
+    tr: string;
+    en: string;
+  };
 }
