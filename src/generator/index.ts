@@ -58,7 +58,7 @@ function createTemplateContext(config: GeneratorConfig): TemplateContext {
 // ============ SHARED TEMPLATE GENERATORS ============
 
 function generateClaudeTemplate(ctx: TemplateContext): string {
-  return `# ${ctx.projectName}
+  let content = `# ${ctx.projectName}
 
 > **Guncelleme:** ${ctx.date} | Vibe Coding
 > **Durum:** Development
@@ -69,11 +69,63 @@ function generateClaudeTemplate(ctx: TemplateContext): string {
 
 | Komut | Aciklama |
 |-------|----------|
-| \`npm run dev\` | Development server |
+`;
+
+  // Add framework-specific commands
+  if (ctx.selectedFrontend.includes('nextjs')) {
+    content += `| \`npm run dev\` | Next.js dev server |
+| \`npm run build\` | Production build |
+| \`npm run start\` | Production server |
+| \`npm run lint\` | ESLint kontrolu |
+`;
+  } else if (ctx.selectedFrontend.includes('nuxt')) {
+    content += `| \`npm run dev\` | Nuxt dev server |
+| \`npm run build\` | Production build |
+| \`npm run preview\` | Preview production |
+| \`npm run lint\` | ESLint kontrolu |
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `| \`python manage.py runserver\` | Development server |
+| \`python manage.py migrate\` | Run migrations |
+| \`python manage.py test\` | Run tests |
+| \`python manage.py createsuperuser\` | Create admin user |
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `| \`uvicorn main:app --reload\` | Development server |
+| \`pytest\` | Run tests |
+| \`pip install -r requirements.txt\` | Install dependencies |
+`;
+  } else if (ctx.selectedBackend.includes('laravel')) {
+    content += `| \`php artisan serve\` | Development server |
+| \`php artisan migrate\` | Run migrations |
+| \`php artisan test\` | Run tests |
+| \`composer install\` | Install dependencies |
+`;
+  } else if (ctx.selectedBackend.includes('rails')) {
+    content += `| \`rails server\` | Development server |
+| \`rails db:migrate\` | Run migrations |
+| \`rails test\` | Run tests |
+| \`bundle install\` | Install dependencies |
+`;
+  } else if (ctx.selectedBackend.includes('spring')) {
+    content += `| \`./mvnw spring-boot:run\` | Development server |
+| \`./mvnw test\` | Run tests |
+| \`./mvnw package\` | Build JAR |
+`;
+  } else if (ctx.selectedBackend.includes('gin')) {
+    content += `| \`go run main.go\` | Development server |
+| \`go test ./...\` | Run tests |
+| \`go build\` | Build binary |
+`;
+  } else {
+    content += `| \`npm run dev\` | Development server |
 | \`npm run build\` | Production build |
 | \`npm run test\` | Testleri calistir |
 | \`npm run lint\` | Lint kontrolu |
+`;
+  }
 
+  content += `
 ---
 
 ## Tech Stack
@@ -100,7 +152,63 @@ ${ctx.selectedDb.length > 0 ? ctx.getTechNames('database', ctx.selectedDb) : '-'
 ## Proje Yapisi
 
 \`\`\`
-${ctx.projectName}/
+`;
+
+  // Add framework-specific project structure
+  if (ctx.selectedFrontend.includes('nextjs')) {
+    content += `${ctx.projectName}/
+├── app/              # App Router pages
+│   ├── layout.tsx    # Root layout
+│   ├── page.tsx      # Home page
+│   └── api/          # API routes
+├── components/       # React components
+├── lib/              # Utilities
+├── public/           # Static files
+└── next.config.js
+`;
+  } else if (ctx.selectedFrontend.includes('nuxt')) {
+    content += `${ctx.projectName}/
+├── pages/            # File-based routing
+├── components/       # Vue components
+├── composables/      # Composition API
+├── server/           # Server routes
+├── public/           # Static files
+└── nuxt.config.ts
+`;
+  } else if (ctx.selectedBackend.includes('django')) {
+    content += `${ctx.projectName}/
+├── ${ctx.projectName.toLowerCase()}/
+│   ├── settings.py   # Configuration
+│   ├── urls.py       # URL routing
+│   └── wsgi.py       # WSGI entry
+├── apps/             # Django apps
+├── templates/        # HTML templates
+├── static/           # Static files
+└── manage.py
+`;
+  } else if (ctx.selectedBackend.includes('fastapi')) {
+    content += `${ctx.projectName}/
+├── app/
+│   ├── main.py       # Entry point
+│   ├── routers/      # API routes
+│   ├── models/       # Pydantic models
+│   ├── services/     # Business logic
+│   └── db/           # Database
+├── tests/
+└── requirements.txt
+`;
+  } else if (ctx.selectedBackend.includes('nestjs')) {
+    content += `${ctx.projectName}/
+├── src/
+│   ├── main.ts       # Entry point
+│   ├── app.module.ts # Root module
+│   ├── modules/      # Feature modules
+│   └── common/       # Shared code
+├── test/
+└── nest-cli.json
+`;
+  } else {
+    content += `${ctx.projectName}/
 ├── src/
 │   ├── components/
 │   ├── services/
@@ -109,7 +217,10 @@ ${ctx.projectName}/
 ├── tests/
 ├── docs/
 └── package.json
-\`\`\`
+`;
+  }
+
+  content += `\`\`\`
 
 ---
 
@@ -117,8 +228,21 @@ ${ctx.projectName}/
 
 ### CRITICAL (Ihlal = Reject)
 - [ ] Hardcoded secret YASAK
-- [ ] TypeScript strict mode ACIK
-- [ ] Her PR review ZORUNLU
+`;
+
+  // Add language-specific rules
+  if (ctx.selectedLangs.includes('js-ts')) {
+    content += `- [ ] TypeScript strict mode ACIK
+`;
+  } else if (ctx.selectedLangs.includes('python')) {
+    content += `- [ ] Type hints kullan (mypy uyumlu)
+`;
+  } else if (ctx.selectedLangs.includes('go')) {
+    content += `- [ ] go vet ve golint hatasiz olmali
+`;
+  }
+
+  content += `- [ ] Her PR review ZORUNLU
 
 ### IMPORTANT (Ihlal = Warning)
 - [ ] Her fonksiyon test edilmeli
@@ -129,6 +253,8 @@ ${ctx.projectName}/
 - [ ] Fonksiyon max 50 satir
 - [ ] Dosya max 300 satir
 - [ ] Aciklayici degisken isimleri`;
+
+  return content;
 }
 
 function generateRulesetsTemplate(ctx: TemplateContext): string {
@@ -424,6 +550,47 @@ function generateCicdTemplate(ctx: TemplateContext): string {
 
 `;
 
+  if (ctx.selectedCicd.includes('github-actions')) {
+    content += `### GitHub Actions
+
+\`\`\`yaml
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+\`\`\`
+`;
+  }
+
   if (ctx.selectedCicd.includes('gitlab-ci')) {
     content += `### GitLab CI
 
@@ -454,6 +621,42 @@ deploy:
     - ./deploy.sh
   only:
     - main
+\`\`\`
+`;
+  }
+
+  if (ctx.selectedCicd.includes('circleci')) {
+    content += `### CircleCI
+
+\`\`\`yaml
+# .circleci/config.yml
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+
+  build:
+    docker:
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run build
+
+workflows:
+  main:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
 \`\`\`
 `;
   }
@@ -563,14 +766,7 @@ ${secretsStack}
 }
 
 function generateDatabaseTemplate(ctx: TemplateContext): string {
-  const dbStack = [
-    ctx.selectedDb.includes('postgresql') ? '- PostgreSQL: Primary database' : '',
-    ctx.selectedDb.includes('mysql') ? '- MySQL: Relational data' : '',
-    ctx.selectedDb.includes('mongodb') ? '- MongoDB: Document storage' : '',
-    ctx.selectedDb.includes('redis') ? '- Redis: Caching & sessions' : '',
-  ].filter(Boolean).join('\n');
-
-  return `# Database Guide - ${ctx.projectName}
+  let content = `# Database Guide - ${ctx.projectName}
 
 > **Son Guncelleme:** ${ctx.date}
 
@@ -578,9 +774,249 @@ function generateDatabaseTemplate(ctx: TemplateContext): string {
 
 ## Database Stack
 
-${dbStack}
+`;
 
----
+  // Traditional databases
+  if (ctx.selectedDb.includes('postgresql')) {
+    content += `### PostgreSQL
+Primary relational database.
+
+\`\`\`bash
+# Connection
+psql -h localhost -U postgres -d ${ctx.projectName.toLowerCase()}
+
+# Backup
+pg_dump -h localhost -U postgres ${ctx.projectName.toLowerCase()} > backup.sql
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('mysql')) {
+    content += `### MySQL
+Relational database.
+
+\`\`\`bash
+# Connection
+mysql -h localhost -u root -p ${ctx.projectName.toLowerCase()}
+
+# Backup
+mysqldump -u root -p ${ctx.projectName.toLowerCase()} > backup.sql
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('sqlite')) {
+    content += `### SQLite
+Lightweight embedded database.
+
+\`\`\`bash
+# Connection
+sqlite3 database.db
+
+# Backup
+cp database.db backup.db
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('mongodb')) {
+    content += `### MongoDB
+Document database.
+
+\`\`\`bash
+# Connection
+mongosh mongodb://localhost:27017/${ctx.projectName.toLowerCase()}
+
+# Backup
+mongodump --db ${ctx.projectName.toLowerCase()} --out backup/
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('redis')) {
+    content += `### Redis
+In-memory cache & session store.
+
+\`\`\`bash
+# Connection
+redis-cli
+
+# Backup
+redis-cli BGSAVE
+\`\`\`
+
+`;
+  }
+
+  // BaaS platforms
+  if (ctx.selectedDb.includes('supabase')) {
+    content += `### Supabase
+PostgreSQL-based Backend-as-a-Service.
+
+\`\`\`typescript
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
+
+// Query
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+  .eq('active', true)
+
+// Insert
+const { data, error } = await supabase
+  .from('users')
+  .insert({ name: 'John', email: 'john@example.com' })
+\`\`\`
+
+**Environment Variables:**
+\`\`\`
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGc...
+SUPABASE_SERVICE_KEY=eyJhbGc...  # Server-side only
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('firebase')) {
+    content += `### Firebase
+Google's Backend-as-a-Service.
+
+\`\`\`typescript
+import { initializeApp } from 'firebase/app'
+import { getFirestore, collection, getDocs } from 'firebase/firestore'
+
+const app = initializeApp({
+  apiKey: process.env.FIREBASE_API_KEY,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+})
+
+const db = getFirestore(app)
+
+// Query
+const snapshot = await getDocs(collection(db, 'users'))
+const users = snapshot.docs.map(doc => doc.data())
+
+// Insert
+await addDoc(collection(db, 'users'), {
+  name: 'John',
+  email: 'john@example.com'
+})
+\`\`\`
+
+`;
+  }
+
+  // ORMs
+  if (ctx.selectedDb.includes('prisma')) {
+    content += `### Prisma ORM
+Type-safe database client.
+
+\`\`\`bash
+# Initialize
+npx prisma init
+
+# Generate client after schema changes
+npx prisma generate
+
+# Create migration
+npx prisma migrate dev --name init
+
+# Deploy migrations (production)
+npx prisma migrate deploy
+
+# Open studio
+npx prisma studio
+\`\`\`
+
+**schema.prisma**:
+\`\`\`prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
+\`\`\`
+
+\`\`\`typescript
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+// Query
+const users = await prisma.user.findMany()
+
+// Create
+const user = await prisma.user.create({
+  data: { email: 'john@example.com', name: 'John' }
+})
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedDb.includes('drizzle')) {
+    content += `### Drizzle ORM
+Lightweight TypeScript ORM.
+
+\`\`\`bash
+# Generate migrations
+npx drizzle-kit generate
+
+# Push to database
+npx drizzle-kit push
+
+# Open studio
+npx drizzle-kit studio
+\`\`\`
+
+**schema.ts**:
+\`\`\`typescript
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name'),
+  createdAt: timestamp('created_at').defaultNow()
+})
+\`\`\`
+
+\`\`\`typescript
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { users } from './schema'
+
+const db = drizzle(pool)
+
+// Query
+const allUsers = await db.select().from(users)
+
+// Insert
+await db.insert(users).values({ email: 'john@example.com', name: 'John' })
+\`\`\`
+
+`;
+  }
+
+  content += `---
 
 ## Migration Rules
 
@@ -596,17 +1032,14 @@ ${dbStack}
 |----------|-----------|-----------|
 | PostgreSQL | Daily | 30 days |
 | MongoDB | Daily | 30 days |
-| Redis | Hourly | 24 hours |`;
+| Redis | Hourly | 24 hours |
+| SQLite | Daily | 30 days |`;
+
+  return content;
 }
 
 function generateDeploymentTemplate(ctx: TemplateContext): string {
-  const deployStrategy = [
-    ctx.selectedContainer.includes('kubernetes') ? '- Kubernetes rolling update' : '',
-    ctx.selectedCloud.includes('azure') ? '- Azure AKS deployment' : '',
-    ctx.selectedCloud.includes('aws') ? '- AWS EKS deployment' : '',
-  ].filter(Boolean).join('\n');
-
-  return `# Deployment Guide - ${ctx.projectName}
+  let content = `# Deployment Guide - ${ctx.projectName}
 
 > **Son Guncelleme:** ${ctx.date}
 
@@ -624,9 +1057,203 @@ function generateDeploymentTemplate(ctx: TemplateContext): string {
 
 ## Deployment Strategy
 
-${deployStrategy}
+`;
 
----
+  // Serverless/JAMstack platforms
+  if (ctx.selectedCloud.includes('vercel')) {
+    content += `### Vercel
+
+\`\`\`bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Production deploy
+vercel --prod
+\`\`\`
+
+**vercel.json** (opsiyonel):
+\`\`\`json
+{
+  "framework": "nextjs",
+  "regions": ["fra1"],
+  "env": {
+    "DATABASE_URL": "@database-url"
+  }
+}
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('netlify')) {
+    content += `### Netlify
+
+\`\`\`bash
+# Install Netlify CLI
+npm i -g netlify-cli
+
+# Deploy
+netlify deploy
+
+# Production deploy
+netlify deploy --prod
+\`\`\`
+
+**netlify.toml**:
+\`\`\`toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('cloudflare')) {
+    content += `### Cloudflare Pages
+
+\`\`\`bash
+# Install Wrangler
+npm i -g wrangler
+
+# Login
+wrangler login
+
+# Deploy
+wrangler pages deploy dist
+\`\`\`
+
+**wrangler.toml** (Workers icin):
+\`\`\`toml
+name = "${ctx.projectName.toLowerCase()}"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('railway')) {
+    content += `### Railway
+
+\`\`\`bash
+# Install Railway CLI
+npm i -g @railway/cli
+
+# Login
+railway login
+
+# Deploy
+railway up
+\`\`\`
+
+**railway.json**:
+\`\`\`json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('fly')) {
+    content += `### Fly.io
+
+\`\`\`bash
+# Install Fly CLI
+curl -L https://fly.io/install.sh | sh
+
+# Login
+fly auth login
+
+# Launch (ilk deployment)
+fly launch
+
+# Deploy
+fly deploy
+\`\`\`
+
+**fly.toml**:
+\`\`\`toml
+app = "${ctx.projectName.toLowerCase()}"
+primary_region = "fra"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+
+[env]
+  NODE_ENV = "production"
+\`\`\`
+
+`;
+  }
+
+  // Cloud providers
+  if (ctx.selectedCloud.includes('azure')) {
+    content += `### Azure AKS
+
+\`\`\`bash
+# AKS credentials
+az aks get-credentials --resource-group <rg> --name <cluster>
+
+# Deploy
+kubectl apply -f k8s/
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('aws')) {
+    content += `### AWS EKS
+
+\`\`\`bash
+# EKS credentials
+aws eks update-kubeconfig --name <cluster>
+
+# Deploy
+kubectl apply -f k8s/
+\`\`\`
+
+`;
+  }
+
+  if (ctx.selectedCloud.includes('gcp')) {
+    content += `### Google Cloud Run
+
+\`\`\`bash
+# Build and push
+gcloud builds submit --tag gcr.io/<project>/${ctx.projectName.toLowerCase()}
+
+# Deploy
+gcloud run deploy ${ctx.projectName.toLowerCase()} \\
+  --image gcr.io/<project>/${ctx.projectName.toLowerCase()} \\
+  --region europe-west1 \\
+  --allow-unauthenticated
+\`\`\`
+
+`;
+  }
+
+  // Kubernetes rollback
+  if (ctx.selectedContainer.includes('kubernetes')) {
+    content += `---
 
 ## Rollback
 
@@ -638,6 +1265,9 @@ kubectl rollout undo deployment/app
 argocd app history <app-name>
 argocd app rollback <app-name> <revision>
 \`\`\``;
+  }
+
+  return content;
 }
 
 function generateApiDocsTemplate(ctx: TemplateContext): string {

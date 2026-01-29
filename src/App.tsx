@@ -28,6 +28,7 @@ const urlConfig = getConfigFromUrl();
 import { categories, tiers } from './data/techStack';
 import { presets } from './data/presets';
 import { getTechInfo } from './data/techInfo';
+import { getPresetInfo } from './data/presetInfo';
 import { generateRuleset, generateTemplateFiles } from './generator';
 import { autoSelectRequired, getAllRecommendations, getRequiredTechs } from './data/relationships';
 import { translations, type Language } from './i18n/translations';
@@ -68,6 +69,7 @@ function App() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [showAutoSelectToast, setShowAutoSelectToast] = useState<string | null>(null);
   const [hoveredTech, setHoveredTech] = useState<string | null>(null);
+  const [hoveredPreset, setHoveredPreset] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<'raw' | 'rendered'>('rendered');
   const [excludedTemplates, setExcludedTemplates] = useState<string[]>([]);
   const [shareSuccess, setShareSuccess] = useState(false);
@@ -283,6 +285,31 @@ function App() {
       if (tech) return tech.name;
     }
     return techId;
+  };
+
+  // Get localized category name
+  const getCategoryName = (categoryId: string): string => {
+    const categoryTranslations: Record<string, keyof typeof t> = {
+      languages: 'catLanguages',
+      frontend: 'catFrontend',
+      backend: 'catBackend',
+      database: 'catDatabase',
+      search: 'catSearch',
+      messagequeue: 'catMessageQueue',
+      cloud: 'catCloud',
+      cicd: 'catCicd',
+      observability: 'catObservability',
+      secrets: 'catSecrets',
+      container: 'catContainer',
+      iac: 'catIac',
+      loadbalancer: 'catLoadBalancer',
+      virtualization: 'catVirtualization',
+    };
+    const key = categoryTranslations[categoryId];
+    if (key && t[key]) return t[key] as string;
+    // Fallback to original name from techStack
+    const cat = categories.find(c => c.id === categoryId);
+    return cat?.name || categoryId;
   };
 
   const handleTierToggle = (tierId: number) => {
@@ -556,12 +583,39 @@ function App() {
               />
             </div>
 
+            {/* Preset Info Panel */}
+            {hoveredPreset && getPresetInfo(hoveredPreset) && (
+              <div className="preset-info-panel">
+                <h4>{presets.find(p => p.id === hoveredPreset)?.name}</h4>
+                <p>{getPresetInfo(hoveredPreset)?.description}</p>
+                <div className="preset-info-details">
+                  <div><strong>{language === 'tr' ? 'Kullanim:' : 'Use Case:'}</strong> {getPresetInfo(hoveredPreset)?.useCase}</div>
+                  <div className="preset-includes">
+                    <strong>{language === 'tr' ? 'Icerik:' : 'Includes:'}</strong>
+                    <ul>{getPresetInfo(hoveredPreset)?.includes.map((item, i) => <li key={i}>{item}</li>)}</ul>
+                  </div>
+                  <div className="preset-pros-cons">
+                    <div className="best-for">
+                      <strong>{language === 'tr' ? 'Ideal:' : 'Best For:'}</strong>
+                      <ul>{getPresetInfo(hoveredPreset)?.bestFor.map((item, i) => <li key={i}>{item}</li>)}</ul>
+                    </div>
+                    <div className="not-for">
+                      <strong>{language === 'tr' ? 'Uygun Degil:' : 'Not For:'}</strong>
+                      <ul>{getPresetInfo(hoveredPreset)?.notFor.map((item, i) => <li key={i}>{item}</li>)}</ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="presets-grid">
               {presets.map(preset => (
                 <div
                   key={preset.id}
                   className={`preset-card ${selectedPreset?.id === preset.id ? 'selected' : ''}`}
                   onClick={() => handlePresetSelect(preset)}
+                  onMouseEnter={() => setHoveredPreset(preset.id)}
+                  onMouseLeave={() => setHoveredPreset(null)}
                 >
                   <div className="preset-icon">{preset.icon}</div>
                   <div className="preset-content">
@@ -636,7 +690,7 @@ function App() {
                 <div key={category.id} className="category-card">
                   <div className="category-header">
                     <span className="category-icon">{category.icon}</span>
-                    <h3>{category.name}</h3>
+                    <h3>{getCategoryName(category.id)}</h3>
                   </div>
                   <div className="tech-list">
                     {category.technologies.map(tech => {
@@ -749,7 +803,7 @@ function App() {
                   return (
                     <div key={catId} className="arch-item">
                       <span className="arch-icon">{cat?.icon}</span>
-                      <span className="arch-label">{cat?.name}:</span>
+                      <span className="arch-label">{getCategoryName(catId)}:</span>
                       <span className="arch-value">{techs.map(t => getTechName(t)).join(', ')}</span>
                     </div>
                   );

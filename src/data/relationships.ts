@@ -308,6 +308,21 @@ export const techRelationships: Record<string, TechRelationship> = {
     ],
   },
 
+  // GCP
+  'gcp': {
+    recommends: [
+      { category: 'container', techs: ['kubernetes'] },
+      { category: 'iac', techs: ['terraform'] },
+    ],
+  },
+
+  // CircleCI
+  'circleci': {
+    recommends: [
+      { category: 'container', techs: ['docker'] },
+    ],
+  },
+
   // Azure DevOps
   'azure-devops': {
     recommends: [
