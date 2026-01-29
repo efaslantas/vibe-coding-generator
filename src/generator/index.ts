@@ -1233,7 +1233,10 @@ export function generateAIToolFiles(config: GeneratorConfig): AIToolFile[] {
   const ctx = createTemplateContext(config);
   const selectedTools = config.selectedAITools || ['claude'];
   const selectedTiers = config.selectedTiers || [1];
+  const excludedTemplates = config.excludedTemplates || [];
   const files: AIToolFile[] = [];
+
+  const isIncluded = (templateName: string): boolean => !excludedTemplates.includes(templateName);
 
   for (const toolId of selectedTools) {
     const tool = aiTools.find((t) => t.id === toolId);
@@ -1246,84 +1249,108 @@ export function generateAIToolFiles(config: GeneratorConfig): AIToolFile[] {
     const folder = tool.folder;
 
     // Generate main template (like CLAUDE.md but for each tool)
-    files.push({
-      fileName: tool.fileName,
-      folder,
-      content: generateMainTemplate(ctx, toolName),
-    });
+    if (isIncluded('MAIN.md')) {
+      files.push({
+        fileName: tool.fileName,
+        folder,
+        content: generateMainTemplate(ctx, toolName),
+      });
+    }
 
     // Generate RULESETS.md
-    files.push({
-      fileName: 'RULESETS.md',
-      folder,
-      content: generateRulesetsTemplate(ctx),
-    });
+    if (isIncluded('RULESETS.md')) {
+      files.push({
+        fileName: 'RULESETS.md',
+        folder,
+        content: generateRulesetsTemplate(ctx),
+      });
+    }
 
     // Generate VIBE_CODING.md
-    files.push({
-      fileName: 'VIBE_CODING.md',
-      folder,
-      content: generateVibeCodingTemplate(ctx),
-    });
+    if (isIncluded('VIBE_CODING.md')) {
+      files.push({
+        fileName: 'VIBE_CODING.md',
+        folder,
+        content: generateVibeCodingTemplate(ctx),
+      });
+    }
 
     // Generate SESSION_NOTES.md
-    files.push({
-      fileName: 'SESSION_NOTES.md',
-      folder,
-      content: generateSessionNotesTemplate(ctx),
-    });
+    if (isIncluded('SESSION_NOTES.md')) {
+      files.push({
+        fileName: 'SESSION_NOTES.md',
+        folder,
+        content: generateSessionNotesTemplate(ctx),
+      });
+    }
 
     // Generate SESSION_HANDOFF.md
-    files.push({
-      fileName: 'SESSION_HANDOFF.md',
-      folder,
-      content: generateSessionHandoffTemplate(ctx),
-    });
+    if (isIncluded('SESSION_HANDOFF.md')) {
+      files.push({
+        fileName: 'SESSION_HANDOFF.md',
+        folder,
+        content: generateSessionHandoffTemplate(ctx),
+      });
+    }
 
     // Generate CODE_REVIEW.md
-    files.push({
-      fileName: 'CODE_REVIEW.md',
-      folder,
-      content: generateCodeReviewTemplate(ctx),
-    });
+    if (isIncluded('CODE_REVIEW.md')) {
+      files.push({
+        fileName: 'CODE_REVIEW.md',
+        folder,
+        content: generateCodeReviewTemplate(ctx),
+      });
+    }
 
     // Tier 2 templates
     if (selectedTiers.includes(2)) {
-      files.push({
-        fileName: 'EXAMPLES.md',
-        folder,
-        content: generateExamplesTemplate(ctx),
-      });
+      if (isIncluded('EXAMPLES.md')) {
+        files.push({
+          fileName: 'EXAMPLES.md',
+          folder,
+          content: generateExamplesTemplate(ctx),
+        });
+      }
 
-      files.push({
-        fileName: 'CODEBASE_MAP.md',
-        folder,
-        content: generateCodebaseMapTemplate(ctx),
-      });
+      if (isIncluded('CODEBASE_MAP.md')) {
+        files.push({
+          fileName: 'CODEBASE_MAP.md',
+          folder,
+          content: generateCodebaseMapTemplate(ctx),
+        });
+      }
 
-      files.push({
-        fileName: 'DEBUGGING.md',
-        folder,
-        content: generateDebuggingTemplate(ctx),
-      });
+      if (isIncluded('DEBUGGING.md')) {
+        files.push({
+          fileName: 'DEBUGGING.md',
+          folder,
+          content: generateDebuggingTemplate(ctx),
+        });
+      }
 
-      files.push({
-        fileName: 'CONTRIBUTING.md',
-        folder,
-        content: generateContributingTemplate(ctx),
-      });
+      if (isIncluded('CONTRIBUTING.md')) {
+        files.push({
+          fileName: 'CONTRIBUTING.md',
+          folder,
+          content: generateContributingTemplate(ctx),
+        });
+      }
 
-      files.push({
-        fileName: 'SETUP_GUIDE.md',
-        folder,
-        content: generateSetupGuideTemplate(ctx),
-      });
+      if (isIncluded('SETUP_GUIDE.md')) {
+        files.push({
+          fileName: 'SETUP_GUIDE.md',
+          folder,
+          content: generateSetupGuideTemplate(ctx),
+        });
+      }
 
-      files.push({
-        fileName: 'ADR.md',
-        folder,
-        content: generateADRTemplate(ctx),
-      });
+      if (isIncluded('ADR.md')) {
+        files.push({
+          fileName: 'ADR.md',
+          folder,
+          content: generateADRTemplate(ctx),
+        });
+      }
     }
   }
 
@@ -1340,7 +1367,7 @@ export function generateTemplateFiles(config: GeneratorConfig): TemplateFile[] {
   const isIncluded = (templateName: string): boolean => !excludedTemplates.includes(templateName);
 
   // Tier 1 - Core templates (always available)
-  if (isIncluded('CLAUDE.md')) files.push({ name: 'CLAUDE.md', content: generateClaudeTemplate(ctx) });
+  if (isIncluded('MAIN.md')) files.push({ name: 'CLAUDE.md', content: generateClaudeTemplate(ctx) });
   if (isIncluded('RULESETS.md')) files.push({ name: 'RULESETS.md', content: generateRulesetsTemplate(ctx) });
   if (isIncluded('VIBE_CODING.md')) files.push({ name: 'VIBE_CODING.md', content: generateVibeCodingTemplate(ctx) });
   if (isIncluded('SESSION_NOTES.md')) files.push({ name: 'SESSION_NOTES.md', content: generateSessionNotesTemplate(ctx) });

@@ -103,7 +103,7 @@ export const tiers: Tier[] = [
     name: 'Tier 1: Zorunlu',
     description: 'Her projede olmali',
     required: true,
-    templates: ['CLAUDE.md', 'RULESETS.md', 'VIBE_CODING.md', 'CODE_REVIEW.md', 'SESSION_NOTES.md', 'SESSION_HANDOFF.md'],
+    templates: ['MAIN.md', 'RULESETS.md', 'VIBE_CODING.md', 'CODE_REVIEW.md', 'SESSION_NOTES.md', 'SESSION_HANDOFF.md'],
   },
   {
     id: 2,
