@@ -14,6 +14,9 @@ export const categories: Category[] = [
       { id: 'kotlin', name: 'Kotlin', category: 'languages' },
       { id: 'csharp', name: 'C#', category: 'languages' },
       { id: 'swift', name: 'Swift', category: 'languages' },
+      { id: 'php', name: 'PHP', category: 'languages' },
+      { id: 'ruby', name: 'Ruby', category: 'languages' },
+      { id: 'rust', name: 'Rust', category: 'languages' },
     ],
   },
   {
@@ -23,9 +26,13 @@ export const categories: Category[] = [
     multiSelect: true,
     technologies: [
       { id: 'react', name: 'React', category: 'frontend' },
+      { id: 'nextjs', name: 'Next.js', category: 'frontend' },
       { id: 'vue', name: 'Vue', category: 'frontend' },
+      { id: 'nuxt', name: 'Nuxt', category: 'frontend' },
       { id: 'angular', name: 'Angular', category: 'frontend' },
       { id: 'svelte', name: 'Svelte', category: 'frontend' },
+      { id: 'remix', name: 'Remix', category: 'frontend' },
+      { id: 'astro', name: 'Astro', category: 'frontend' },
     ],
   },
   {
@@ -35,11 +42,15 @@ export const categories: Category[] = [
     multiSelect: true,
     technologies: [
       { id: 'nodejs', name: 'Node.js (Express/Fastify)', category: 'backend' },
+      { id: 'nestjs', name: 'NestJS', category: 'backend' },
       { id: 'django', name: 'Django', category: 'backend' },
       { id: 'fastapi', name: 'FastAPI', category: 'backend' },
+      { id: 'flask', name: 'Flask', category: 'backend' },
       { id: 'spring', name: 'Spring Boot', category: 'backend' },
       { id: 'aspnet', name: 'ASP.NET Core', category: 'backend' },
       { id: 'gin', name: 'Gin (Go)', category: 'backend' },
+      { id: 'laravel', name: 'Laravel', category: 'backend' },
+      { id: 'rails', name: 'Ruby on Rails', category: 'backend' },
     ],
   },
   {
@@ -53,6 +64,11 @@ export const categories: Category[] = [
       { id: 'mssql', name: 'MSSQL', category: 'database' },
       { id: 'mongodb', name: 'MongoDB', category: 'database' },
       { id: 'redis', name: 'Redis', category: 'database' },
+      { id: 'supabase', name: 'Supabase', category: 'database' },
+      { id: 'firebase', name: 'Firebase', category: 'database' },
+      { id: 'prisma', name: 'Prisma (ORM)', category: 'database' },
+      { id: 'drizzle', name: 'Drizzle (ORM)', category: 'database' },
+      { id: 'sqlite', name: 'SQLite', category: 'database' },
     ],
   },
   {
@@ -77,12 +93,18 @@ export const categories: Category[] = [
   },
   {
     id: 'cloud',
-    name: 'Cloud Provider',
+    name: 'Cloud & Hosting',
     icon: '☁️',
     multiSelect: true,
     technologies: [
       { id: 'azure', name: 'Azure', category: 'cloud' },
       { id: 'aws', name: 'AWS', category: 'cloud' },
+      { id: 'gcp', name: 'Google Cloud', category: 'cloud' },
+      { id: 'vercel', name: 'Vercel', category: 'cloud' },
+      { id: 'netlify', name: 'Netlify', category: 'cloud' },
+      { id: 'cloudflare', name: 'Cloudflare', category: 'cloud' },
+      { id: 'railway', name: 'Railway', category: 'cloud' },
+      { id: 'fly', name: 'Fly.io', category: 'cloud' },
     ],
   },
   {
@@ -91,12 +113,14 @@ export const categories: Category[] = [
     icon: '🔄',
     multiSelect: true,
     technologies: [
+      { id: 'github-actions', name: 'GitHub Actions', category: 'cicd' },
       { id: 'gitlab-ci', name: 'GitLab CI', category: 'cicd' },
       { id: 'jenkins', name: 'Jenkins', category: 'cicd' },
       { id: 'argocd', name: 'ArgoCD', category: 'cicd' },
       { id: 'azure-devops', name: 'Azure DevOps', category: 'cicd' },
       { id: 'bamboo', name: 'Bamboo', category: 'cicd' },
       { id: 'sonarqube', name: 'SonarQube', category: 'cicd' },
+      { id: 'circleci', name: 'CircleCI', category: 'cicd' },
     ],
   },
   {

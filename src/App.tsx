@@ -1,6 +1,30 @@
 import { useState, useMemo, useCallback } from 'react';
 import JSZip from 'jszip';
 import DOMPurify from 'dompurify';
+
+// Parse config from URL on initial load
+function getConfigFromUrl(): {
+  projectName?: string;
+  technologies?: Record<string, string[]>;
+  tiers?: number[];
+  presetId?: string;
+} | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const configParam = params.get('config');
+  if (!configParam) return null;
+  try {
+    const decoded = atob(configParam);
+    const config = JSON.parse(decoded);
+    // Clear URL after reading
+    window.history.replaceState({}, '', window.location.pathname);
+    return config;
+  } catch {
+    return null;
+  }
+}
+
+const urlConfig = getConfigFromUrl();
 import { categories, tiers } from './data/techStack';
 import { presets } from './data/presets';
 import { getTechInfo } from './data/techInfo';
@@ -24,22 +48,60 @@ function App() {
 
   const t = translations[language];
 
-  const [currentStep, setCurrentStep] = useState<Step>('preset');
-  const [projectName, setProjectName] = useState(savedProjectName);
+  const [currentStep, setCurrentStep] = useState<Step>(() => urlConfig ? 'stack' : 'preset');
+  const [projectName, setProjectName] = useState(() => urlConfig?.projectName || savedProjectName);
   const [selectedPreset, setSelectedPreset] = useState<Preset | null>(() => {
-    if (savedPresetId) {
-      return presets.find(p => p.id === savedPresetId) || null;
+    const presetId = urlConfig?.presetId || savedPresetId;
+    if (presetId) {
+      return presets.find(p => p.id === presetId) || null;
     }
     return null;
   });
-  const [selectedTechnologies, setSelectedTechnologies] = useState<Record<string, string[]>>(savedTechnologies);
-  const [selectedTiers, setSelectedTiers] = useState<number[]>(savedTiers.length > 0 ? savedTiers : [1]);
+  const [selectedTechnologies, setSelectedTechnologies] = useState<Record<string, string[]>>(() =>
+    urlConfig?.technologies || savedTechnologies
+  );
+  const [selectedTiers, setSelectedTiers] = useState<number[]>(() => {
+    const tiers = urlConfig?.tiers || savedTiers;
+    return tiers.length > 0 ? tiers : [1];
+  });
   const [generatedContent, setGeneratedContent] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [showAutoSelectToast, setShowAutoSelectToast] = useState<string | null>(null);
   const [hoveredTech, setHoveredTech] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<'raw' | 'rendered'>('rendered');
   const [excludedTemplates, setExcludedTemplates] = useState<string[]>([]);
+  const [shareSuccess, setShareSuccess] = useState(false);
+
+  // Generate shareable URL
+  const generateShareUrl = useCallback((): string => {
+    const config = {
+      projectName,
+      technologies: selectedTechnologies,
+      tiers: selectedTiers,
+      presetId: selectedPreset?.id,
+    };
+    const encoded = btoa(JSON.stringify(config));
+    return `${window.location.origin}${window.location.pathname}?config=${encoded}`;
+  }, [projectName, selectedTechnologies, selectedTiers, selectedPreset]);
+
+  const handleShare = async () => {
+    const url = generateShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2000);
+    }
+  };
 
   // Validate and sanitize project name
   const sanitizeProjectName = (name: string): string => {
@@ -424,6 +486,14 @@ function App() {
           </div>
         </div>
         <div className="header-actions">
+          <button
+            className={`share-btn ${shareSuccess ? 'success' : ''}`}
+            onClick={handleShare}
+            title={language === 'tr' ? 'Config Linkini Kopyala' : 'Copy Config Link'}
+            disabled={getSelectionCount() === 0}
+          >
+            {shareSuccess ? '✓' : '🔗'}
+          </button>
           <button
             className="reset-btn"
             onClick={handleClearConfig}
