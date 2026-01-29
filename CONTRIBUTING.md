@@ -54,7 +54,7 @@ docs(readme): Update installation instructions
 ```
 src/
 ├── data/
-│   ├── bgtsStack.ts      # Teknoloji kategorileri
+│   ├── techStack.ts      # Teknoloji kategorileri
 │   ├── presets.ts        # Hazır preset'ler
 │   ├── relationships.ts  # Teknoloji bağımlılıkları
 │   └── techInfo.ts       # Teknoloji açıklamaları

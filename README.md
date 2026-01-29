@@ -1,61 +1,84 @@
 # Vibe Coding Generator
 
-> AI-destekli development için özelleştirilmiş ruleset oluşturucu
+> Generate customized rulesets for AI-assisted development
 
 ![Vibe Coding Generator](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)
 
-Vibe Coding Generator, Claude AI ve diğer LLM'lerle çalışırken projeleriniz için kapsamlı ruleset ve template'ler oluşturmanıza yardımcı olan bir araçtır.
+[Türkçe](README_TR.md) | English
 
-## 🚀 Özellikler
+Vibe Coding Generator helps you create comprehensive rulesets and templates for your projects when working with Claude AI and other LLMs.
 
-- **5 Adımlı Wizard**: Kolay kullanımlı adım adım yapılandırma
-- **Hazır Preset'ler**: Full-Stack, Microservices, API, Mobile ve daha fazlası
-- **Akıllı Bağımlılıklar**: Teknoloji seçimlerine göre otomatik bağımlılık yönetimi
-- **Validation**: Seçimlerinizi kontrol eden akıllı doğrulama
-- **Tech Info**: Her teknoloji için detaylı bilgi ve karşılaştırma
-- **35 Template**: Tier 1-5 arası kapsamlı template seti
-- **Export**: Markdown indirme ve clipboard kopyalama
+## Screenshot
 
-## 📦 Kurulum
+![Vibe Coding Generator Screenshot](docs/screenshot.png)
+
+<!-- TODO: Add actual screenshot to docs/screenshot.png -->
+
+## Features
+
+- **5-Step Wizard**: Easy step-by-step configuration
+- **Ready-to-use Presets**: Full-Stack, Microservices, API, Mobile, and more
+- **Smart Dependencies**: Automatic dependency management based on technology choices
+- **Validation**: Intelligent validation checking your selections
+- **Tech Info**: Detailed information and comparison for each technology
+- **35 Templates**: Comprehensive template set from Tier 1-5
+- **Export**: Markdown download and clipboard copy
+- **Shareable URLs**: Share your configuration with others
+
+## Quick Start
+
+### Using Docker (Recommended)
 
 ```bash
-# Repository'yi klonlayın
+# Clone the repository
 git clone https://github.com/efaslantas/vibe-coding-generator.git
-
-# Proje dizinine gidin
 cd vibe-coding-generator
 
-# Bağımlılıkları yükleyin
+# Start production server (port 9091)
+docker compose up -d
+
+# Open in browser
+open http://localhost:9091
+```
+
+### Using npm
+
+```bash
+# Clone the repository
+git clone https://github.com/efaslantas/vibe-coding-generator.git
+cd vibe-coding-generator
+
+# Install dependencies
 npm install
 
-# Development server'ı başlatın
+# Start development server
 npm run dev
 ```
 
-## 🎯 Kullanım
+## Usage
 
-1. **Proje Adı**: Projenizin adını girin
-2. **Preset Seçimi**: Hazır bir yapılandırma seçin veya "Custom" ile sıfırdan başlayın
-3. **Tech Stack**: Kullanacağınız teknolojileri seçin
-4. **Template Tier'ları**: İhtiyacınıza göre template seviyelerini seçin
-5. **Export**: Oluşturulan ruleset'i indirin veya kopyalayın
+1. **Project Name**: Enter your project name
+2. **Preset Selection**: Choose a ready-made configuration or start from scratch with "Custom"
+3. **Tech Stack**: Select the technologies you'll use
+4. **Template Tiers**: Choose template levels according to your needs
+5. **Export**: Download or copy the generated ruleset
 
-## 📋 Template Tier'ları
+## Template Tiers
 
-| Tier | Açıklama | Template Sayısı |
-|------|----------|-----------------|
-| **Tier 1: Zorunlu** | Her projede olması gereken temel dosyalar | 6 |
-| **Tier 2: Önerilen** | Orta-büyük projeler için | 6 |
-| **Tier 3: Enterprise** | Production-ready projeler için | 8 |
-| **Tier 4: AI & Modern** | Vibe Coding özel pratikler | 10 |
-| **Tier 5: Reliability** | Production-grade güvenilirlik | 5 |
+| Tier | Description | Templates |
+|------|-------------|-----------|
+| **Tier 1: Essential** | Core files every project needs | 6 |
+| **Tier 2: Recommended** | For medium to large projects | 6 |
+| **Tier 3: Enterprise** | For production-ready projects | 8 |
+| **Tier 4: AI & Modern** | Vibe Coding specific practices | 10 |
+| **Tier 5: Reliability** | Production-grade reliability | 5 |
 
-## 🛠️ Desteklenen Teknolojiler
+## Supported Technologies
 
-### Diller
+### Languages
 JavaScript/TypeScript, Python, Go, Java, Kotlin, C#, Swift
 
 ### Frontend
@@ -73,21 +96,21 @@ Docker, Kubernetes, Terraform, GitLab CI, Jenkins, ArgoCD
 ### Observability
 Prometheus, Grafana, Loki, Jaeger
 
-## 🤝 Katkıda Bulunma
+## Contributing
 
-Katkılarınızı memnuniyetle karşılıyoruz! Lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyin.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'feat: Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📄 Lisans
+## License
 
-Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
+This project is licensed under the [MIT License](LICENSE).
 
-## 🙏 Teşekkürler
+## Acknowledgments
 
 - [Vite](https://vitejs.dev/) - Build tool
 - [React](https://react.dev/) - UI library
@@ -95,10 +118,10 @@ Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
 
 ---
 
-**Vibe Coding Nedir?**
+**What is Vibe Coding?**
 
 ```
 Vibe Coding = AI Assistant + Human Developer + Iterative Feedback Loop
 ```
 
-AI ile birlikte kod yazarken, doğru context ve kurallar sağlamak çok önemlidir. Bu generator, projeleriniz için tutarlı ve kapsamlı bir ruleset oluşturmanıza yardımcı olur.
+When coding with AI, providing the right context and rules is crucial. This generator helps you create consistent and comprehensive rulesets for your projects.
