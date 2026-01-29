@@ -43,3 +43,26 @@ coverage/
 # Misc
 *.tsbuildinfo
 .eslintcache
+
+# Personal/Sensitive files
+CLAUDE.md
+.claude/
+SESSION_*.md
+*.local.md
+notes.md
+todo.md
+*.private.*
+
+# Secrets (extra protection)
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+config.local.json
+
+# Backup files
+*.bak
+*.backup
+*.old
